@@ -1,0 +1,6 @@
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\TestLibrary\TestLibrary\bin\Debug\TestLibrary.dll
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\TestLibrary\TestLibrary\bin\Debug\TestLibrary.pdb
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\TestLibrary\TestLibrary\obj\Debug\TestLibrary.csprojAssemblyReference.cache
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\TestLibrary\TestLibrary\obj\Debug\TestLibrary.csproj.CoreCompileInputs.cache
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\TestLibrary\TestLibrary\obj\Debug\TestLibrary.dll
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\TestLibrary\TestLibrary\obj\Debug\TestLibrary.pdb

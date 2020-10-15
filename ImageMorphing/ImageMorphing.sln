@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageMorphing", "ImageMorphing\ImageMorphing.csproj", "{66F089BF-D4A6-458E-A754-2C3818C56D40}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageMorphing", "ImageMorphing\ImageMorphing.csproj", "{00B3590F-3EBC-4A33-A22E-76FDE326E808}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{66F089BF-D4A6-458E-A754-2C3818C56D40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66F089BF-D4A6-458E-A754-2C3818C56D40}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66F089BF-D4A6-458E-A754-2C3818C56D40}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66F089BF-D4A6-458E-A754-2C3818C56D40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00B3590F-3EBC-4A33-A22E-76FDE326E808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00B3590F-3EBC-4A33-A22E-76FDE326E808}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00B3590F-3EBC-4A33-A22E-76FDE326E808}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00B3590F-3EBC-4A33-A22E-76FDE326E808}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8A905F29-0250-4BA4-AB5F-AA85EC3691FE}
+		SolutionGuid = {53B7FC35-B7ED-4161-8E51-4E56D00AAE4E}
 	EndGlobalSection
 EndGlobal
