@@ -10,3 +10,4 @@ C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\I
 C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\bin\Debug\TestLibrary.dll
 C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\bin\Debug\TestLibrary.pdb
 C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\obj\Debug\ImageMorphing.csproj.CopyComplete
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\obj\Debug\ImageMorphing.Form1.resources

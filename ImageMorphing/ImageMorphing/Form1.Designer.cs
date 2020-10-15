@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace ImageMorphing
 {
     partial class Form1
     {
+        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\Debug\ASMTest.dll")]
+        static extern int Addition(int x, int y);
         /// <summary>
         /// Wymagana zmienna projektanta.
         /// </summary>
@@ -47,6 +50,10 @@ namespace ImageMorphing
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.button4 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -166,11 +173,47 @@ namespace ImageMorphing
             this.pictureBox3.TabIndex = 12;
             this.pictureBox3.TabStop = false;
             // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(1117, 486);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(137, 22);
+            this.textBox3.TabIndex = 13;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(1305, 486);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(137, 22);
+            this.textBox4.TabIndex = 14;
+            // 
+            // textBox5
+            // 
+            this.textBox5.Location = new System.Drawing.Point(1222, 596);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(137, 22);
+            this.textBox5.TabIndex = 15;
+            this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(1222, 541);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(136, 27);
+            this.button4.TabIndex = 16;
+            this.button4.Text = "Dodaj";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1617, 754);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.textBox5);
+            this.Controls.Add(this.textBox4);
+            this.Controls.Add(this.textBox3);
             this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.trackBar1);
@@ -193,6 +236,22 @@ namespace ImageMorphing
             this.ResumeLayout(false);
             this.PerformLayout();
 
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+
+                int res = Addition(Convert.ToInt32(textBox3.Text), Convert.ToInt32(textBox4.Text));
+                textBox5.Text = res.ToString();
+
+            }
+            catch (DllNotFoundException err)
+            {
+                textBox5.Text = "Problem!";
+            }
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
@@ -243,6 +302,10 @@ namespace ImageMorphing
         private TrackBar trackBar1;
         private Label label2;
         private PictureBox pictureBox3;
+        private TextBox textBox3;
+        private TextBox textBox4;
+        private TextBox textBox5;
+        private Button button4;
     }
 }
 

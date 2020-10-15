@@ -19,5 +19,10 @@ namespace ImageMorphing
             myTest = new test();
             InitializeComponent();
         }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
