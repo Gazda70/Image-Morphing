@@ -1,0 +1,10 @@
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\bin\Debug\ImageMorphing.exe.config
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\bin\Debug\ImageMorphing.exe
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\bin\Debug\ImageMorphing.pdb
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\obj\Debug\ImageMorphing.csprojAssemblyReference.cache
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\obj\Debug\ImageMorphing.Properties.Resources.resources
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\obj\Debug\ImageMorphing.csproj.GenerateResource.cache
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\obj\Debug\ImageMorphing.csproj.CoreCompileInputs.cache
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\obj\Debug\ImageMorphing.exe
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\obj\Debug\ImageMorphing.pdb
+C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ImageMorphing\ImageMorphing\obj\Debug\ImageMorphing.Form1.resources
