@@ -7,16 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TestLibrary;
+using MorphingLibrary;
+
 
 namespace ImageMorphing
 {
     public partial class Form1 : Form
     {
-        private test myTest;
+        Morphing myMorpher;
         public Form1()
         {
-            myTest = new test();
             InitializeComponent();
         }
 

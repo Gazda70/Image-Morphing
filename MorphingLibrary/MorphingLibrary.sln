@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MorphingLibrary", "TestLibrary\MorphingLibrary.csproj", "{FEF2097C-01FC-4856-8D42-94203EC67796}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MorphingLibrary", "MorphingLibrary\MorphingLibrary.csproj", "{A3603759-6234-4E4C-9974-90CDE39C76E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FEF2097C-01FC-4856-8D42-94203EC67796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FEF2097C-01FC-4856-8D42-94203EC67796}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FEF2097C-01FC-4856-8D42-94203EC67796}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FEF2097C-01FC-4856-8D42-94203EC67796}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3603759-6234-4E4C-9974-90CDE39C76E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3603759-6234-4E4C-9974-90CDE39C76E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3603759-6234-4E4C-9974-90CDE39C76E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3603759-6234-4E4C-9974-90CDE39C76E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {90BA050D-00E3-4FBB-947C-B588AFE9ED57}
+		SolutionGuid = {02999091-9118-4F77-9551-3EB2C146D495}
 	EndGlobalSection
 EndGlobal

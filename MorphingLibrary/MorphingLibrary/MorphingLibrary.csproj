@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FEF2097C-01FC-4856-8D42-94203EC67796}</ProjectGuid>
+    <ProjectGuid>{A3603759-6234-4E4C-9974-90CDE39C76E5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestLibrary</RootNamespace>
-    <AssemblyName>TestLibrary</AssemblyName>
+    <RootNamespace>MorphingLibrary</RootNamespace>
+    <AssemblyName>MorphingLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using MorphingLibrary;
 
 namespace ImageMorphing
 {
@@ -118,6 +119,7 @@ namespace ImageMorphing
             this.button3.TabIndex = 6;
             this.button3.Text = "Morph";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // checkBox1
             // 
@@ -236,6 +238,22 @@ namespace ImageMorphing
             this.ResumeLayout(false);
             this.PerformLayout();
 
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                this.myMorpher = new Morphing();
+                myMorpher.Lambda = 0.5;
+                myMorpher.createOutputImage();
+
+            }
+            catch (DllNotFoundException err)
+            {
+                textBox5.Text = "Problem!";
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
