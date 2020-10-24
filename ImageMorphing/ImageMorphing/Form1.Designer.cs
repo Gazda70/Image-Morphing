@@ -55,6 +55,10 @@ namespace ImageMorphing
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.textBox9 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
@@ -207,11 +211,43 @@ namespace ImageMorphing
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(162, 658);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(100, 22);
+            this.textBox6.TabIndex = 17;
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(299, 658);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(100, 22);
+            this.textBox7.TabIndex = 18;
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(442, 658);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(100, 22);
+            this.textBox8.TabIndex = 19;
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(577, 658);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(100, 22);
+            this.textBox9.TabIndex = 20;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1617, 754);
+            this.Controls.Add(this.textBox9);
+            this.Controls.Add(this.textBox8);
+            this.Controls.Add(this.textBox7);
+            this.Controls.Add(this.textBox6);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.textBox4);
@@ -245,11 +281,14 @@ namespace ImageMorphing
             try
             {
 
-                this.myMorpher = new Morphing(firstImage, secondImage, new Tuple<int, int>[1] { new Tuple<int, int>(100, 100) },
-                    new Tuple<int, int>[1] { new Tuple<int, int>(100, 100) });
+                this.myMorpher = new Morphing(firstImage, secondImage, new Tuple<int, int>[2] { new Tuple<int, int>(200, 200), new Tuple<int, int>(300, 300) },
+                    new Tuple<int, int>[1] { new Tuple<int, int>(100, 100) }, 0.5);
                 myMorpher.Lambda = 0.5;
                 myMorpher.createOutputImage();
-
+                textBox6.Text = Convert.ToString(myMorpher.firstPoint[0]);
+                textBox7.Text = Convert.ToString(myMorpher.firstPoint[1]);
+                textBox8.Text = Convert.ToString(myMorpher.secondPoint[0]);
+                textBox9.Text = Convert.ToString(myMorpher.secondPoint[1]);
             }
             catch (DllNotFoundException err)
             {
@@ -325,6 +364,10 @@ namespace ImageMorphing
         private TextBox textBox4;
         private TextBox textBox5;
         private Button button4;
+        private TextBox textBox6;
+        private TextBox textBox7;
+        private TextBox textBox8;
+        private TextBox textBox9;
     }
 }
 

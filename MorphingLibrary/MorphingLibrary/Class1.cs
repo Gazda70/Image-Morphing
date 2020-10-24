@@ -46,14 +46,17 @@ namespace MorphingLibrary
                     }
             }
         }
+        public double[] firstPoint;
+        public double[] secondPoint;
 
         public Morphing() { }
-        public Morphing(Bitmap firstPic, Bitmap secondPic, Tuple<int, int>[] firstPoints, Tuple<int, int>[] secondPoints)
+        public Morphing(Bitmap firstPic, Bitmap secondPic, Tuple<int, int>[] firstPoints, Tuple<int, int>[] secondPoints, double lambda)
         {
             firstPicture = firstPic;
             secondPicture = secondPic;
             FirstPoints = firstPoints;
             SecondPoints = secondPoints;
+            Lambda = lambda;
             charPointsNumber = getOutputCharPointsCount();
         }
         public void getPixelsFromInput()
@@ -163,8 +166,8 @@ namespace MorphingLibrary
 
         private void determinePointsForObtainingColor(int resX, int resY)
         {
-            double[] firstPoint = new double[2];
-            double[] secondPoint = new double[2];
+            firstPoint = new double[2];
+            secondPoint = new double[2];
             double denominator = calcDenominator(resX, resY);
             firstPoint = calcNumerator(resX, resY, RelDistFirst);
             secondPoint = calcNumerator(resX, resY, RelDistSecond);
@@ -172,8 +175,8 @@ namespace MorphingLibrary
             firstPoint[1] = firstPoint[1] / denominator;
             secondPoint[0] = secondPoint[0] / denominator;
             secondPoint[1] = secondPoint[1] / denominator;
-            firstColorSource = new Tuple<int, int>(convertAndCheck(firstPoint[0]), convertAndCheck(firstPoint[1]));
-            secondColorSource = new Tuple<int, int>(convertAndCheck(secondPoint[0]), convertAndCheck(secondPoint[1]));
+            // firstColorSource = new Tuple<int, int>(convertAndCheck(firstPoint[0]), convertAndCheck(firstPoint[1]));
+            // secondColorSource = new Tuple<int, int>(convertAndCheck(secondPoint[0]), convertAndCheck(secondPoint[1]));
         }
 
         private double calcDenominator(int resX, int resY)
@@ -181,7 +184,7 @@ namespace MorphingLibrary
             double total = 0;
             for (int i = 0; i < charPointsNumber; i++)
             {
-              total += 1/Math.Sqrt(Math.Pow(outputCharPoints[i].Item1 - resX, 2) - Math.Pow(outputCharPoints[i].Item2 - resY, 2));
+              total += 1/Math.Sqrt(Math.Pow(outputCharPoints[i].Item1 - resX, 2) + Math.Pow(outputCharPoints[i].Item2 - resY, 2));
             }
             return total;
         }
@@ -194,7 +197,7 @@ namespace MorphingLibrary
             for (int i = 0; i < charPointsNumber; i++)
             {
               actualDenom = Math.Sqrt(Math.Pow(outputCharPoints[i].Item1 - resX, 2)
-                  - Math.Pow(outputCharPoints[i].Item2 - resY, 2));
+                  + Math.Pow(outputCharPoints[i].Item2 - resY, 2));
                 total[0] += relDist[i].Item1 / actualDenom;
                 total[1] += relDist[i].Item2 / actualDenom;
 
@@ -205,6 +208,7 @@ namespace MorphingLibrary
 
         private int convertAndCheck(double toConvert)
         {
+            System.Console.WriteLine(toConvert + "\n");
             int converted = System.Convert.ToInt32(toConvert);
             return converted;
         }
