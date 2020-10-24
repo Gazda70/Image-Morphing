@@ -13,11 +13,22 @@ namespace MorphingLibrary
         private Bitmap firstPicture;
         private Bitmap secondPicture;
         private Bitmap outputPicture;
+        private int charPointsNumber;
         private Tuple<int, int>[] firstPoints;
         private Tuple<int, int>[] secondPoints;
+        private Tuple<int, int>[] outputCharPoints;
 
         public Tuple<int, int>[] SecondPoints { get => secondPoints; set => secondPoints = value; }
         public Tuple<int, int>[] FirstPoints { get => firstPoints; set => firstPoints = value; }
+
+        public Tuple<int, int>[] OutputCharPoints { get => outputCharPoints; set => outputCharPoints = value; }
+
+        public Tuple<int, int>[] RelDistFirst { get; set; }
+        public Tuple<int, int>[] RelDistSecond { get; set; }
+
+        private Tuple<int, int> firstColorSource;
+        private Tuple<int, int> secondColorSource;
+
         private double _lambda;
         public double Lambda
         {
@@ -33,19 +44,17 @@ namespace MorphingLibrary
                     {
                         throw new ArgumentException("Lambda must be in interval <0,1>");
                     }
-
-              /*  catch (ArgumentException arg)
-                {
-
-                }*/
             }
         }
 
         public Morphing() { }
-        public Morphing(Bitmap firstPic, Bitmap secondPic)
+        public Morphing(Bitmap firstPic, Bitmap secondPic, Tuple<int, int>[] firstPoints, Tuple<int, int>[] secondPoints)
         {
             firstPicture = firstPic;
             secondPicture = secondPic;
+            FirstPoints = firstPoints;
+            SecondPoints = secondPoints;
+            charPointsNumber = getOutputCharPointsCount();
         }
         public void getPixelsFromInput()
         {
@@ -96,7 +105,7 @@ namespace MorphingLibrary
 
             morphingAlgorithm(outputRGB);
 
-            // Copy the RGB values back to the bitmap
+            //Copy the RGB values back to the bitmap
             System.Runtime.InteropServices.Marshal.Copy(outputRGB, 0, outputPtr, outputLen);
 
             outputPicture.UnlockBits(outputBmpData);
@@ -106,22 +115,30 @@ namespace MorphingLibrary
 
         private void morphingAlgorithm(byte[] outputRGB)
         {
-            //Blue
-            for (int counter = 0; counter < outputRGB.Length; counter += 3)
-                outputRGB[counter] = 200;
-            //Green
-            for (int counter = 1; counter < outputRGB.Length; counter += 3)
-                outputRGB[counter] = 255;
-            //Red
-            for (int counter = 2; counter < outputRGB.Length; counter += 3)
-                outputRGB[counter] = 255;
+            int[] RGB = new int[3];
+            int counter = 0;
+            setCharacteristicPoints();
+            calculateRelativeDistances();
+            for (int j = 1; j < outputPicture.Height; j++)
+            {
+                for (int i = 1; i < outputPicture.Width; i++)
+                {
+                    determinePointsForObtainingColor(i, j);
+                    RGB = setColorForOutputPixel();
+                    //UWAGA NA KOLEJNOSC SKŁADOWYCH RGB!!!
+                    outputRGB[counter] = System.Convert.ToByte(RGB[2]);
+                    outputRGB[counter+1] = System.Convert.ToByte(RGB[1]);
+                    outputRGB[counter+2] = System.Convert.ToByte(RGB[0]);
+                    counter += 3;
+                }
+            }
+
         }
 
         private void setCharacteristicPoints()
         {
-            int pointsNumber = getOutputCharPointsCount();
-            Tuple<int, int>[] outputCharPoints = new Tuple<int, int>[pointsNumber];
-            for(int i = 0; i < pointsNumber; i++)
+            outputCharPoints = new Tuple<int, int>[charPointsNumber];
+            for(int i = 0; i < charPointsNumber; i++)
             {
                 outputCharPoints[i] = new Tuple<int, int>
                     (System.Convert.ToInt32(FirstPoints[i].Item1 * (1 - Lambda) + SecondPoints[i].Item1 * Lambda),
@@ -130,9 +147,75 @@ namespace MorphingLibrary
 
         }
 
-        private void setColorForOutputPixels()
+        private void calculateRelativeDistances()
         {
+            RelDistFirst = new Tuple<int, int>[charPointsNumber];
+            RelDistSecond = new Tuple<int, int>[charPointsNumber];
 
+            for (int i = 0; i < charPointsNumber; i++)
+            {
+                RelDistFirst[i] = new Tuple<int, int>(FirstPoints[i].Item1 - OutputCharPoints[i].Item1,
+                                    FirstPoints[i].Item2 - OutputCharPoints[i].Item2);
+                RelDistSecond[i] = new Tuple<int, int>(SecondPoints[i].Item1 - OutputCharPoints[i].Item1,
+                                    SecondPoints[i].Item2 - OutputCharPoints[i].Item2);
+            }
+        }
+
+        private void determinePointsForObtainingColor(int resX, int resY)
+        {
+            double[] firstPoint = new double[2];
+            double[] secondPoint = new double[2];
+            double denominator = calcDenominator(resX, resY);
+            firstPoint = calcNumerator(resX, resY, RelDistFirst);
+            secondPoint = calcNumerator(resX, resY, RelDistSecond);
+            firstPoint[0] = firstPoint[0] / denominator;
+            firstPoint[1] = firstPoint[1] / denominator;
+            secondPoint[0] = secondPoint[0] / denominator;
+            secondPoint[1] = secondPoint[1] / denominator;
+            firstColorSource = new Tuple<int, int>(convertAndCheck(firstPoint[0]), convertAndCheck(firstPoint[1]));
+            secondColorSource = new Tuple<int, int>(convertAndCheck(secondPoint[0]), convertAndCheck(secondPoint[1]));
+        }
+
+        private double calcDenominator(int resX, int resY)
+        {
+            double total = 0;
+            for (int i = 0; i < charPointsNumber; i++)
+            {
+              total += 1/Math.Sqrt(Math.Pow(outputCharPoints[i].Item1 - resX, 2) - Math.Pow(outputCharPoints[i].Item2 - resY, 2));
+            }
+            return total;
+        }
+
+        private double[] calcNumerator(int resX, int resY, Tuple<int, int>[] relDist)
+        {
+            double[] total = new double[2];
+            double actualDenom = 0;
+
+            for (int i = 0; i < charPointsNumber; i++)
+            {
+              actualDenom = Math.Sqrt(Math.Pow(outputCharPoints[i].Item1 - resX, 2)
+                  - Math.Pow(outputCharPoints[i].Item2 - resY, 2));
+                total[0] += relDist[i].Item1 / actualDenom;
+                total[1] += relDist[i].Item2 / actualDenom;
+
+            }
+
+            return total;
+        }
+
+        private int convertAndCheck(double toConvert)
+        {
+            int converted = System.Convert.ToInt32(toConvert);
+            return converted;
+        }
+        private int[] setColorForOutputPixel()
+        {
+            int[] color = new int[3];
+            color[0] = 0;
+            color[1] = 0;
+            color[2] = 255;
+
+            return color;
         }
 
         private int getOutputCharPointsCount()

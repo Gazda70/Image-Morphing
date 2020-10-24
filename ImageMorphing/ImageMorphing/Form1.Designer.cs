@@ -245,7 +245,8 @@ namespace ImageMorphing
             try
             {
 
-                this.myMorpher = new Morphing();
+                this.myMorpher = new Morphing(firstImage, secondImage, new Tuple<int, int>[1] { new Tuple<int, int>(100, 100) },
+                    new Tuple<int, int>[1] { new Tuple<int, int>(100, 100) });
                 myMorpher.Lambda = 0.5;
                 myMorpher.createOutputImage();
 
