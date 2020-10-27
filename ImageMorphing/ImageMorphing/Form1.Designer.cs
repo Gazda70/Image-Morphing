@@ -56,14 +56,13 @@ namespace ImageMorphing
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.trackBar2 = new System.Windows.Forms.TrackBar();
+            this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -73,8 +72,8 @@ namespace ImageMorphing
             this.pictureBox1.Size = new System.Drawing.Size(427, 403);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseUp += new MouseEventHandler(pictureBox1_MouseDown);
-            this.pictureBox1.Paint += new PaintEventHandler(pictureBox1_Paint);
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
             // 
             // textBox1
             // 
@@ -117,12 +116,12 @@ namespace ImageMorphing
             this.pictureBox2.Size = new System.Drawing.Size(427, 403);
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
-            this.pictureBox2.MouseUp += new MouseEventHandler(pictureBox2_MouseDown);
-            this.pictureBox2.Paint += new PaintEventHandler(pictureBox2_Paint);
+            this.pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
+            this.pictureBox2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseDown);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(442, 717);
+            this.button3.Location = new System.Drawing.Point(96, 644);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(133, 25);
             this.button3.TabIndex = 6;
@@ -216,43 +215,32 @@ namespace ImageMorphing
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // textBox6
+            // trackBar2
             // 
-            this.textBox6.Location = new System.Drawing.Point(162, 658);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(100, 22);
-            this.textBox6.TabIndex = 17;
+            this.trackBar2.Location = new System.Drawing.Point(354, 667);
+            this.trackBar2.Name = "trackBar2";
+            this.trackBar2.Size = new System.Drawing.Size(423, 56);
+            this.trackBar2.TabIndex = 17;
+            this.trackBar2.TickFrequency = 10;
+            this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
             // 
-            // textBox7
+            // label3
             // 
-            this.textBox7.Location = new System.Drawing.Point(299, 658);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(100, 22);
-            this.textBox7.TabIndex = 18;
-            // 
-            // textBox8
-            // 
-            this.textBox8.Location = new System.Drawing.Point(442, 658);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(100, 22);
-            this.textBox8.TabIndex = 19;
-            // 
-            // textBox9
-            // 
-            this.textBox9.Location = new System.Drawing.Point(577, 658);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new System.Drawing.Size(100, 22);
-            this.textBox9.TabIndex = 20;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(351, 620);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(110, 17);
+            this.label3.TabIndex = 18;
+            this.label3.Text = "Wartość lambda";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1617, 754);
-            this.Controls.Add(this.textBox9);
-            this.Controls.Add(this.textBox8);
-            this.Controls.Add(this.textBox7);
-            this.Controls.Add(this.textBox6);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.trackBar2);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.textBox4);
@@ -276,9 +264,17 @@ namespace ImageMorphing
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            this.textBox3.Text = System.Convert.ToString(System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
+                / System.Convert.ToDouble(this.trackBar2.Maximum)));
+            
         }
 
         private void pictureBox1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -368,8 +364,9 @@ namespace ImageMorphing
                 {
                     secondImageCharPoints.Add(new Point(point.Item1, point.Item2));
                 }*/
-                this.myMorpher = new Morphing(firstImageCharPoints, secondImageCharPoints, 0.5);
-                myMorpher.Lambda = 0.5;
+                double lambda = System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
+                    / System.Convert.ToDouble(this.trackBar2.Maximum));
+                this.myMorpher = new Morphing(firstImageCharPoints, secondImageCharPoints, lambda);
                 myMorpher.createOutputImage();
             }
             catch (DllNotFoundException err)
@@ -446,12 +443,10 @@ namespace ImageMorphing
         private TextBox textBox4;
         private TextBox textBox5;
         private Button button4;
-        private TextBox textBox6;
-        private TextBox textBox7;
-        private TextBox textBox8;
-        private TextBox textBox9;
         private List<Point> firstImageCharPoints;
         private List<Point> secondImageCharPoints;
+        private TrackBar trackBar2;
+        private Label label3;
     }
 }
 
