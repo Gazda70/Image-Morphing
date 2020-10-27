@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -72,6 +73,8 @@ namespace ImageMorphing
             this.pictureBox1.Size = new System.Drawing.Size(427, 403);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseUp += new MouseEventHandler(pictureBox1_MouseDown);
+            this.pictureBox1.Paint += new PaintEventHandler(pictureBox1_Paint);
             // 
             // textBox1
             // 
@@ -114,6 +117,8 @@ namespace ImageMorphing
             this.pictureBox2.Size = new System.Drawing.Size(427, 403);
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
+            this.pictureBox2.MouseUp += new MouseEventHandler(pictureBox2_MouseDown);
+            this.pictureBox2.Paint += new PaintEventHandler(pictureBox2_Paint);
             // 
             // button3
             // 
@@ -276,19 +281,96 @@ namespace ImageMorphing
 
         }
 
+        private void pictureBox1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if(firstImageCharPoints == null)
+            {
+                firstImageCharPoints = new List<Point>();
+            }
+            firstImageCharPoints.Add(new Point(e.Location.X, e.Location.Y));
+            Invalidate();
+        }
+        private void pictureBox2_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (secondImageCharPoints == null)
+            {
+                secondImageCharPoints = new List<Point>();
+            }
+            secondImageCharPoints.Add(new Point(e.Location.X, e.Location.Y));
+            Invalidate();
+        }
+        private void pictureBox1_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        {
+            if (pictureBox1.Image != null)
+            {
+
+                Bitmap bm = new Bitmap(pictureBox1.Image);
+                if (firstImageCharPoints != null)
+                {
+                    foreach (Point point in firstImageCharPoints)
+                    {
+                        
+                        using (Graphics gr = Graphics.FromImage(bm))
+                        {
+                            gr.DrawEllipse(Pens.Red,
+                                    new Rectangle(point.X, point.Y, 4, 4)
+                                );
+                        }
+                    }
+                }
+                
+                pictureBox1.Image = new Bitmap(bm, new Size(pictureBox1.Width, pictureBox1.Height));
+            }
+        }
+        private void pictureBox2_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        {
+            if (pictureBox2.Image != null)
+            {
+                Bitmap bm = new Bitmap(pictureBox2.Image);
+                if (secondImageCharPoints != null)
+                {
+                    foreach (Point point in secondImageCharPoints)
+                    {
+                        using (Graphics gr = Graphics.FromImage(bm))
+                        {
+                            gr.DrawEllipse(Pens.Red,
+                                    new Rectangle(point.X, point.Y, 4, 4)
+                                );
+                        }
+                    }
+                }
+                pictureBox2.Image = new Bitmap(bm, new Size(pictureBox2.Width, pictureBox2.Height));
+            }
+        }
         private void button3_Click(object sender, EventArgs e)
         {
             try
             {
-
-                this.myMorpher = new Morphing(firstImage, secondImage, new Tuple<int, int>[2] { new Tuple<int, int>(200, 200), new Tuple<int, int>(300, 300) },
-                    new Tuple<int, int>[1] { new Tuple<int, int>(100, 100) }, 0.5);
+                if (firstImageCharPoints == null)
+                {
+                    firstImageCharPoints = new List<Point>();
+                }
+                if (secondImageCharPoints == null)
+                {
+                    secondImageCharPoints = new List<Point>();
+                }
+                /* Tuple<int, int>[] fPoints = new Tuple<int, int>[6]{ new Tuple<int, int>(130, 50), new Tuple<int, int>(150, 50),
+                     new Tuple<int, int>(130, 60), new Tuple<int, int>(150, 60), new Tuple<int, int>(130, 70), new Tuple<int, int>(150, 70)};*/
+                /*  Tuple<int, int>[] sPoints = new Tuple<int, int>[6]{ new Tuple<int, int>(130, 50), new Tuple<int, int>(150, 50),
+                      new Tuple<int, int>(130, 60), new Tuple<int, int>(150, 60), new Tuple<int, int>(130, 70), new Tuple<int, int>(150, 70)};*/
+                /*Tuple<int, int>[] fPoints = new Tuple<int, int>[1]{ new Tuple<int, int>(130, 50)};
+                Tuple<int, int>[] sPoints = new Tuple<int, int>[1]{ new Tuple<int, int>(130, 50)};
+                foreach (Tuple<int, int> point in fPoints)
+                {
+                    firstImageCharPoints.Add(new Point(point.Item1, point.Item2));
+                }
+                foreach (Tuple<int, int> point in sPoints)
+                {
+                    secondImageCharPoints.Add(new Point(point.Item1, point.Item2));
+                }*/
+                this.myMorpher = new Morphing(firstImageCharPoints, secondImageCharPoints, 0.5);
                 myMorpher.Lambda = 0.5;
                 myMorpher.createOutputImage();
-                textBox6.Text = Convert.ToString(myMorpher.firstPoint[0]);
-                textBox7.Text = Convert.ToString(myMorpher.firstPoint[1]);
-                textBox8.Text = Convert.ToString(myMorpher.secondPoint[0]);
-                textBox9.Text = Convert.ToString(myMorpher.secondPoint[1]);
             }
             catch (DllNotFoundException err)
             {
@@ -368,6 +450,8 @@ namespace ImageMorphing
         private TextBox textBox7;
         private TextBox textBox8;
         private TextBox textBox9;
+        private List<Point> firstImageCharPoints;
+        private List<Point> secondImageCharPoints;
     }
 }
 
