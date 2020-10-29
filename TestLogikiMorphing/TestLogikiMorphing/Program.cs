@@ -12,16 +12,16 @@ namespace TestLogikiMorphing
     {
         static void Main(string[] args)
         {
-            Bitmap firstBitmap = new Bitmap("C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/TestLogikiMorphing/TestLogikiMorphing/bin/Debug/pies.jpg");
-            Bitmap secondBitmap = new Bitmap("C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/TestLogikiMorphing/TestLogikiMorphing/bin/Debug/pies1.jpg");
+            Bitmap firstBitmap = new Bitmap("pies.jpg");
+            Bitmap secondBitmap = new Bitmap("pies1.jpg");
             Console.WriteLine("Rozmiar pierwszego obrazu: " + firstBitmap.Width + ", " + firstBitmap.Height + "\n");
             Console.WriteLine("Rozmiar drugiego obrazu: " + secondBitmap.Width + ", " + secondBitmap.Height + "\n");
             Console.WriteLine("Format pierwszego obrazu: "+firstBitmap.PixelFormat+"\n");
             Console.WriteLine("Format drugiego obrazu: " + secondBitmap.PixelFormat + "\n");
-            Tuple<int, int>[] firstPoints = new Tuple<int, int>[2] { new Tuple<int, int>(0, 0), new Tuple<int, int>(275, 0),};
-            Tuple<int, int>[] secondPoints = new Tuple<int, int>[2] {new Tuple<int, int>(0, 183), new Tuple<int, int>(275, 183)};
-            Morphing test = new Morphing(firstBitmap, secondBitmap, firstPoints, secondPoints, 0.8);
-            test.getPixelsFromInput();
+            Tuple<int, int>[] firstPoints = new Tuple<int, int>[1] { new Tuple<int, int>(1, 3)};
+            Tuple<int, int>[] secondPoints = new Tuple<int, int>[1] { new Tuple<int, int>(3, 1) };
+            Morphing test = new Morphing(firstBitmap, secondBitmap, firstPoints, secondPoints, 0.5);
+            test.createOutputImage();
         }
     }
 
@@ -35,7 +35,7 @@ namespace TestLogikiMorphing
             public Tuple<int, int>[] secondPoints;
             public Tuple<int, int>[] outputCharPoints;
 
-            public Tuple<int, int>[] RelDistFirst { get; set; }
+        public Tuple<int, int>[] RelDistFirst { get; set; }
             public Tuple<int, int>[] RelDistSecond { get; set; }
 
             public int[] firstColorSource;
@@ -51,8 +51,10 @@ namespace TestLogikiMorphing
             {
                 firstPicture = firstPic;
                 secondPicture = secondPic;
-                this.firstPoints = firstPoints;
-                this.secondPoints = secondPoints;
+                this.firstPoints = new Tuple<int, int>[] {new Tuple<int, int>(100, 100), new Tuple<int, int>(40, 120),
+                 new Tuple<int, int>(80, 80)};
+                this.secondPoints = new Tuple<int, int>[] { new Tuple<int, int>(50, 50),new Tuple<int, int>(140, 20),
+                new Tuple<int, int>(30, 90)};
                 Lambda = lambda;
                 charPointsNumber = getOutputCharPointsCount();
                 Console.WriteLine("Ilość punktów charakterystycznych: " + charPointsNumber + "\n");
@@ -106,34 +108,35 @@ namespace TestLogikiMorphing
 
                 int outputLen = Math.Abs(outputBmpData.Stride) * outputPicture.Height;
                 byte[] outputRGB = new byte[outputLen];
+                outputPicture.UnlockBits(outputBmpData);
 
-                morphingAlgorithm(outputRGB);
+                setCharacteristicPoints();
+                calculateRelativeDistances();
+
+                for (int i = 1; i < charPointsNumber; i++)
+                {
+                    morphingAlgorithm(i);
+                }
 
                 //Copy the RGB values back to the bitmap
-                System.Runtime.InteropServices.Marshal.Copy(outputRGB, 0, outputPtr, outputLen);
-
-                outputPicture.UnlockBits(outputBmpData);
+                //System.Runtime.InteropServices.Marshal.Copy(outputRGB, 0, outputPtr, outputLen);
 
                 outputPicture.Save("C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/TestLogikiMorphing/TestLogikiMorphing/bin/Debug/output.jpg", ImageFormat.Jpeg);
             }
 
-            private void morphingAlgorithm(byte[] outputRGB)
-            {
+            private void morphingAlgorithm(int actualMax) { 
                 int[] RGB = new int[3];
                 int counter = 0;
-                setCharacteristicPoints();
-                calculateRelativeDistances();
                 for (int j = 1; j < outputPicture.Height; j++)
                 {
                     for (int i = 1; i < outputPicture.Width; i++)
                     {
-                        determinePointsForObtainingColor(i, j);
-                        RGB = setColorForOutputPixel();
-                        //UWAGA NA KOLEJNOSC SKŁADOWYCH RGB!!!
-                        outputRGB[counter] = System.Convert.ToByte(RGB[2]);
-                        outputRGB[counter + 1] = System.Convert.ToByte(RGB[1]);
-                        outputRGB[counter + 2] = System.Convert.ToByte(RGB[0]);
-                        counter += 3;
+                        determinePointsForObtainingColor(i, j, actualMax);
+                    //UWAGA NA KOLEJNOSC SKŁADOWYCH RGB!!!
+                    /*      outputRGB[counter] = System.Convert.ToByte(RGB[2]);
+                          outputRGB[counter + 1] = System.Convert.ToByte(RGB[1]);
+                          outputRGB[counter + 2] = System.Convert.ToByte(RGB[0]);
+                          counter += 3;*/
                     }
                 }
             }
@@ -167,13 +170,13 @@ namespace TestLogikiMorphing
             }
             }
 
-            private void determinePointsForObtainingColor(int resX, int resY)
+            private void determinePointsForObtainingColor(int resX, int resY, int max)
             {
                 firstPoint = new double[2];
                 secondPoint = new double[2];
-                double denominator = calcDenominator(resX, resY);
-                firstPoint = calcNumerator(resX, resY, RelDistFirst);
-                secondPoint = calcNumerator(resX, resY, RelDistSecond);
+                double denominator = calcDenominator(resX, resY, max);
+                firstPoint = calcNumerator(resX, resY, RelDistFirst,  max);
+                secondPoint = calcNumerator(resX, resY, RelDistSecond,  max);
                 firstPoint[0] = firstPoint[0] / denominator;
                 firstPoint[1] = firstPoint[1] / denominator;
                 secondPoint[0] = secondPoint[0] / denominator;
@@ -184,30 +187,31 @@ namespace TestLogikiMorphing
                 || Double.IsNaN(secondPoint[0]) || Double.IsNaN(secondPoint[1])))
                 {
                     firstColorSource = new int[2]{ System.Convert.ToInt32(firstPoint[0]) + resX, System.Convert.ToInt32(firstPoint[1]) + resY};
-                    secondColorSource = new int[2] { System.Convert.ToInt32(secondPoint[0]) + resY, System.Convert.ToInt32(secondPoint[1]) + resY };
-                }
+                    secondColorSource = new int[2] { System.Convert.ToInt32(secondPoint[0]) + resX, System.Convert.ToInt32(secondPoint[1]) + resY };
+                    outputPicture.SetPixel(resX, resY, setColorForOutputPixel());
+            }
         }
 
-        private double calcDenominator(int resX, int resY)
+        private double calcDenominator(int resX, int resY, int max)
             {
                 double total = 0;
-                for (int i = 0; i < charPointsNumber; i++)
+                for (int i = 0; i < max; i++)
                 {
-                    total += 1 / Math.Sqrt(Math.Pow(outputCharPoints[i].Item1 - resX, 2) + Math.Pow(outputCharPoints[i].Item2 - resY, 2));
+                    total += 1 / (Math.Pow(outputCharPoints[i].Item1 - resX, 2) + Math.Pow(outputCharPoints[i].Item2 - resY, 2));
                 }
                 //Console.WriteLine("Całkowita wartość mianownika " + total + "\n");
             return total;
             }
 
-            private double[] calcNumerator(int resX, int resY, Tuple<int, int>[] relDist)
+            private double[] calcNumerator(int resX, int resY, Tuple<int, int>[] relDist, int max)
             {
                 double[] total = new double[2];
                 double actualDenom = 0;
 
-                for (int i = 0; i < charPointsNumber; i++)
+                for (int i = 0; i < max; i++)
                 {
-                    actualDenom = Math.Sqrt(Math.Pow(outputCharPoints[i].Item1 - resX, 2)
-                        + Math.Pow(outputCharPoints[i].Item2 - resY, 2));
+                    actualDenom = Math.Pow(outputCharPoints[i].Item1 - resX, 2)
+                        + Math.Pow(outputCharPoints[i].Item2 - resY, 2);
                     total[0] += relDist[i].Item1 / actualDenom;
                     total[1] += relDist[i].Item2 / actualDenom;
                // Console.WriteLine("Cząstkowa wartość licznika " + total[0] +", "+total[1] + "\n");
@@ -216,7 +220,7 @@ namespace TestLogikiMorphing
             //Console.WriteLine("Całkowita wartość licznika " + total[0] + ", " + total[1] + "\n");
             return total;
             }
-            private int[] setColorForOutputPixel()
+            private Color setColorForOutputPixel()
             {
                 int[] color = new int[3];
                 Color firstColor = Color.Black;
@@ -260,12 +264,12 @@ namespace TestLogikiMorphing
                 }
                 secondColor = secondPicture.GetPixel(secondColorSource[0], secondColorSource[1]);
 
+            Color toReturn = Color.FromArgb(
+                Convert.ToInt32(firstColor.R * (1 - Lambda) + secondColor.R * Lambda),
+                Convert.ToInt32(firstColor.G * (1 - Lambda) + secondColor.G * Lambda),
+                Convert.ToInt32(firstColor.B * (1 - Lambda) + secondColor.B * Lambda));
 
-                color[0] = Convert.ToInt32(firstColor.R * (1 - Lambda) + secondColor.R * Lambda);
-                color[1] = Convert.ToInt32(firstColor.G * (1 - Lambda) + secondColor.G * Lambda);
-                color[2] = Convert.ToInt32(firstColor.B * (1 - Lambda) + secondColor.B * Lambda);
-
-                return color;
+                return toReturn;
             }
 
             private int getOutputCharPointsCount()

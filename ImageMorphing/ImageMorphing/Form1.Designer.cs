@@ -350,23 +350,19 @@ namespace ImageMorphing
                 {
                     secondImageCharPoints = new List<Point>();
                 }
-                /* Tuple<int, int>[] fPoints = new Tuple<int, int>[6]{ new Tuple<int, int>(130, 50), new Tuple<int, int>(150, 50),
-                     new Tuple<int, int>(130, 60), new Tuple<int, int>(150, 60), new Tuple<int, int>(130, 70), new Tuple<int, int>(150, 70)};*/
-                /*  Tuple<int, int>[] sPoints = new Tuple<int, int>[6]{ new Tuple<int, int>(130, 50), new Tuple<int, int>(150, 50),
-                      new Tuple<int, int>(130, 60), new Tuple<int, int>(150, 60), new Tuple<int, int>(130, 70), new Tuple<int, int>(150, 70)};*/
-                /*Tuple<int, int>[] fPoints = new Tuple<int, int>[1]{ new Tuple<int, int>(130, 50)};
-                Tuple<int, int>[] sPoints = new Tuple<int, int>[1]{ new Tuple<int, int>(130, 50)};
-                foreach (Tuple<int, int> point in fPoints)
+                Tuple<int, int>[] fPoints = new Tuple<int, int>[firstImageCharPoints.Count];
+                Tuple<int, int>[] sPoints = new Tuple<int, int>[secondImageCharPoints.Count];
+                for(int i = 0; i < firstImageCharPoints.Count; i++)
                 {
-                    firstImageCharPoints.Add(new Point(point.Item1, point.Item2));
+                    fPoints[i] = new Tuple<int, int>(firstImageCharPoints.ToArray()[i].X, firstImageCharPoints.ToArray()[i].Y);
                 }
-                foreach (Tuple<int, int> point in sPoints)
+                for (int i = 0; i < secondImageCharPoints.Count; i++)
                 {
-                    secondImageCharPoints.Add(new Point(point.Item1, point.Item2));
-                }*/
+                    sPoints[i] = new Tuple<int, int>(secondImageCharPoints.ToArray()[i].X, secondImageCharPoints.ToArray()[i].Y);
+                }
                 double lambda = System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
                     / System.Convert.ToDouble(this.trackBar2.Maximum));
-                this.myMorpher = new Morphing(firstImageCharPoints, secondImageCharPoints, lambda);
+                this.myMorpher = new Morphing(firstImage, secondImage, fPoints, sPoints, lambda);
                 myMorpher.createOutputImage();
             }
             catch (DllNotFoundException err)
@@ -405,7 +401,14 @@ namespace ImageMorphing
             }
             // Stretches the image to fit the pictureBox.
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            firstImage = new Bitmap(textBox1.Text);
+            if (textBox1.Text.Length != 0)
+            {
+                firstImage = new Bitmap(textBox1.Text);
+            }
+            else
+            {
+                firstImage = new Bitmap("pies.jpg");
+            }
             pictureBox1.Image = (Image)firstImage;
         }
         private void button2_Click(object sender, EventArgs e)
@@ -417,7 +420,15 @@ namespace ImageMorphing
             }
             // Stretches the image to fit the pictureBox.
             pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
-            secondImage = new Bitmap(textBox2.Text);
+            if (textBox2.Text.Length != 0)
+            {
+                secondImage = new Bitmap(textBox2.Text);
+                //secondImage.
+            }
+            else
+            {
+                secondImage = new Bitmap("pies1.jpg");
+            }
             pictureBox2.Image = (Image)secondImage;
             // this.morpher.LockUnlockBitsExample(secondImage);
         }
