@@ -12,6 +12,8 @@ namespace ImageMorphing
     {
         [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\Debug\ASMTest.dll")]
         static extern int Addition(int x, int y);
+        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\Debug\ASMTest.dll")]
+        static extern int CalcNumerator(int resX, int resY, int max, int relDistLen, int oCPLen, int[] relDist, int[] outputCharPoints);
         /// <summary>
         /// Wymagana zmienna projektanta.
         /// </summary>
@@ -340,6 +342,11 @@ namespace ImageMorphing
         }
         private void button3_Click(object sender, EventArgs e)
         {
+            int[] relDist = new int[2];
+            int[] outputCharPoints = new int[2];
+            int result = CalcNumerator(0, 0, 0, 0, 5, relDist, outputCharPoints);
+            textBox5.Text = System.Convert.ToString(result);
+            /*
             try
             {
                 if (firstImageCharPoints == null)
@@ -350,25 +357,16 @@ namespace ImageMorphing
                 {
                     secondImageCharPoints = new List<Point>();
                 }
-                Tuple<int, int>[] fPoints = new Tuple<int, int>[firstImageCharPoints.Count];
-                Tuple<int, int>[] sPoints = new Tuple<int, int>[secondImageCharPoints.Count];
-                for(int i = 0; i < firstImageCharPoints.Count; i++)
-                {
-                    fPoints[i] = new Tuple<int, int>(firstImageCharPoints.ToArray()[i].X, firstImageCharPoints.ToArray()[i].Y);
-                }
-                for (int i = 0; i < secondImageCharPoints.Count; i++)
-                {
-                    sPoints[i] = new Tuple<int, int>(secondImageCharPoints.ToArray()[i].X, secondImageCharPoints.ToArray()[i].Y);
-                }
+
                 double lambda = System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
                     / System.Convert.ToDouble(this.trackBar2.Maximum));
-                this.myMorpher = new Morphing(firstImage, secondImage, fPoints, sPoints, lambda);
-                myMorpher.createOutputImage();
+                this.myMorpher = new Morphing();
+                createOutputImage();
             }
             catch (DllNotFoundException err)
             {
                 textBox5.Text = "Problem!";
-            }
+            }*/
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -434,12 +432,200 @@ namespace ImageMorphing
         }
 
         #endregion
+        public void getPixelsFromInput()
+        {
+            Rectangle firstRect = new Rectangle(0, 0, firstImage.Width, firstImage.Height);
+            Rectangle secondRect = new Rectangle(0, 0, secondImage.Width, secondImage.Height);
 
+            BitmapData firstBmpData =
+            firstImage.LockBits(firstRect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
+            firstImage.PixelFormat);
+            BitmapData secondBmpData =
+            secondImage.LockBits(secondRect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
+            secondImage.PixelFormat);
+
+
+            // Get the address of the first line.
+            IntPtr firstPtr = firstBmpData.Scan0;
+            IntPtr secondPtr = secondBmpData.Scan0;
+
+
+            // Declare an array to hold the bytes of the bitmap.
+            int firstLen = Math.Abs(firstBmpData.Stride) * firstImage.Height;
+            byte[] firstRGB = new byte[firstLen];
+            int secondLen = Math.Abs(secondBmpData.Stride) * secondImage.Height;
+            byte[] secondRGB = new byte[firstLen];
+
+            // Copy the RGB values into the array.
+            System.Runtime.InteropServices.Marshal.Copy(firstPtr, firstRGB, 0, firstLen);
+            System.Runtime.InteropServices.Marshal.Copy(secondPtr, secondRGB, 0, secondLen);
+
+            // Unlock the bits.
+            firstImage.UnlockBits(firstBmpData);
+            secondImage.UnlockBits(secondBmpData);
+        }
+        public void createOutputImage()
+        {
+            outputImage = new Bitmap(firstImage.Width, firstImage.Height, PixelFormat.Format24bppRgb);
+
+            /*  Rectangle outputRect = new Rectangle(0, 0, firstImage.Width, firstImage.Height);
+
+              BitmapData outputBmpData =
+              outputImage.LockBits(outputRect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
+              outputImage.PixelFormat);
+
+              IntPtr outputPtr = outputBmpData.Scan0;
+
+              int outputLen = Math.Abs(outputBmpData.Stride) * outputImage.Height;
+              byte[] outputRGB = new byte[outputLen];
+              outputImage.UnlockBits(outputBmpData);*/
+            int firstLen = firstImageCharPoints.Count;
+            int secondLen = secondImageCharPoints.Count;
+            int outputLen = getOutputCharPointsCount(firstLen, secondLen);
+            int[][] fPoints = new int[firstImageCharPoints.Count][];
+            int[][] sPoints = new int[secondImageCharPoints.Count][];
+            int[][] oPoints = new int[outputLen][];
+            int[][] fRelDist = new int[outputLen][];
+            int[][] sRelDist = new int[outputLen][];
+            int[] fColorSource = new int[2];
+            int[] sColorSource = new int[2];
+            double[] fPoint = new double[2];
+            double[] sPoint = new double[2];
+            double lambda = System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
+                    / System.Convert.ToDouble(this.trackBar2.Maximum));
+
+            for (int i = 0; i < firstImageCharPoints.Count; i++)
+            {
+                fPoints[i] = new int[2] { firstImageCharPoints.ToArray()[i].X, firstImageCharPoints.ToArray()[i].Y };
+            }
+            for (int i = 0; i < secondImageCharPoints.Count; i++)
+            {
+                sPoints[i] = new int[2] { secondImageCharPoints.ToArray()[i].X, secondImageCharPoints.ToArray()[i].Y };
+            }
+            setCharacteristicPoints(oPoints, fPoints, sPoints, outputLen, lambda);
+            calculateRelativeDistances(fRelDist, sRelDist, fPoints, sPoints, oPoints, outputLen);
+
+            for (int i = 1; i < outputLen; i++)
+            {
+                morphingAlgorithm(i, lambda, oPoints, fRelDist, sRelDist, fColorSource, sColorSource, fPoint, sPoint);
+            }
+
+            //Copy the RGB values back to the bitmap
+            //System.Runtime.InteropServices.Marshal.Copy(outputRGB, 0, outputPtr, outputLen);
+
+            outputImage.Save("output.jpg", ImageFormat.Jpeg);
+        }
+        private void setCharacteristicPoints(int[][] outputCharPoints, 
+            int[][] firstPoints, int[][] secondPoints, int charPointsNumber, double lambda)
+        {
+            for (int i = 0; i < charPointsNumber; i++)
+            {
+                outputCharPoints[i] = new int[2] { System.Convert.ToInt32(firstPoints[i][0] * (1 - lambda) + secondPoints[i][0] * lambda),
+                    System.Convert.ToInt32(firstPoints[i][1] * (1 - lambda) + secondPoints[i][1] * lambda)};
+            }
+
+        }
+
+        private void calculateRelativeDistances(int[][] RelDistFirst, int[][] RelDistSecond, int[][]firstPoints,
+            int[][]secondPoints, int[][]outputCharPoints, int charPointsNumber)
+        {
+            for (int i = 0; i < charPointsNumber; i++)
+            {
+                RelDistFirst[i] = new int[2] { firstPoints[i][0] - outputCharPoints[i][0], firstPoints[i][1] - outputCharPoints[i][1] };
+                RelDistSecond[i] = new int[2] { secondPoints[i][0] - outputCharPoints[i][0], secondPoints[i][1] - outputCharPoints[i][1]};
+            }
+        }
+        private void morphingAlgorithm(int max, double lambda, int[][] outputCharPoints,
+           int[][] RelDistFirst, int[][] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint, 
+           double[] secondPoint)
+        {
+            int[] RGB = new int[3];
+            int counter = 0;
+            for (int j = 1; j < outputImage.Height; j++)
+            {
+                for (int i = 1; i < outputImage.Width; i++)
+                {
+                    
+                    myMorpher.determinePointsForObtainingColor(i, j, max, outputCharPoints,
+            RelDistFirst,  RelDistSecond,  firstColorSource,  secondColorSource, firstPoint,  secondPoint);
+                    //UWAGA NA KOLEJNOSC SKŁADOWYCH RGB!!!
+                    /*      outputRGB[counter] = System.Convert.ToByte(RGB[2]);
+                          outputRGB[counter + 1] = System.Convert.ToByte(RGB[1]);
+                          outputRGB[counter + 2] = System.Convert.ToByte(RGB[0]);
+                          counter += 3;*/
+                    Color myColor = setColorForOutputPixel(firstColorSource, secondColorSource, lambda);
+                    outputImage.SetPixel(i, j, myColor);
+                }
+            }
+        }
+
+        private int getOutputCharPointsCount(int first, int second)
+        {
+            int toReturn = first;
+
+            if (first > second)
+            {
+                toReturn = second;
+            }
+            return toReturn;
+        }
+        private Color setColorForOutputPixel(int[] firstColorSource, int[] secondColorSource, double lambda)
+        {
+            int[] color = new int[3];
+            Color firstColor = Color.Black;
+            Color secondColor = Color.Black;
+
+            if (firstColorSource[0] >= outputImage.Width)
+            {
+                firstColorSource[0] = outputImage.Width - 1;
+            }
+            if (firstColorSource[1] >= outputImage.Height)
+            {
+                firstColorSource[1] = outputImage.Height - 1;
+            }
+
+            if (firstColorSource[0] <= 0)
+            {
+                firstColorSource[0] = 1;
+            }
+            if (firstColorSource[1] <= 0)
+            {
+                firstColorSource[1] = 1;
+            }
+            firstColor = firstImage.GetPixel(firstColorSource[0], firstColorSource[1]);
+
+            if (secondColorSource[0] >= outputImage.Width)
+            {
+                secondColorSource[0] = outputImage.Width - 1;
+            }
+            if (secondColorSource[1] >= outputImage.Height)
+            {
+                secondColorSource[1] = outputImage.Height - 1;
+            }
+
+            if (secondColorSource[0] <= 0)
+            {
+                secondColorSource[0] = 1;
+            }
+            if (secondColorSource[1] <= 0)
+            {
+                secondColorSource[1] = 1;
+            }
+            secondColor = secondImage.GetPixel(secondColorSource[0], secondColorSource[1]);
+
+            Color toReturn = Color.FromArgb(
+                Convert.ToInt32(firstColor.R * (1 - lambda) + secondColor.R * lambda),
+                Convert.ToInt32(firstColor.G * (1 - lambda) + secondColor.G * lambda),
+                Convert.ToInt32(firstColor.B * (1 - lambda) + secondColor.B * lambda));
+
+            return toReturn;
+        }
         private PictureBox pictureBox1;
         private TextBox textBox1;
         private Button button1;
         private Bitmap firstImage;
         private Bitmap secondImage;
+        private Bitmap outputImage;
         private TextBox textBox2;
         private Button button2;
         private PictureBox pictureBox2;
@@ -460,4 +646,6 @@ namespace ImageMorphing
         private Label label3;
     }
 }
+
+
 
