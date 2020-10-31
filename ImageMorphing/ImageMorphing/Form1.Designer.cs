@@ -8,12 +8,20 @@ using MorphingLibrary;
 
 namespace ImageMorphing
 {
-    partial class Form1
+
+    unsafe partial class Form1
     {
-        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\Debug\ASMTest.dll")]
+
+        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\x64\Release\ASMTest.dll")]
         static extern int Addition(int x, int y);
-        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\Debug\ASMTest.dll")]
-        static extern int CalcNumerator(int resX, int resY, int max, int relDistLen, int oCPLen, int[] relDist, int[] outputCharPoints);
+        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\x64\Release\ASMTest.dll")]
+        //int cumulatedDenom, int outputCharPoints,
+        //    int resX, int resY, int max, int relDistLen, int oCPLen, int[] relDist
+
+        static unsafe extern int CalcNumerator(int* first, int second, int* third);
+        //static unsafe extern void CalcNumerator(int first, double sixth);
+
+
         /// <summary>
         /// Wymagana zmienna projektanta.
         /// </summary>
@@ -276,12 +284,12 @@ namespace ImageMorphing
         {
             this.textBox3.Text = System.Convert.ToString(System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
                 / System.Convert.ToDouble(this.trackBar2.Maximum)));
-            
+
         }
 
         private void pictureBox1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if(firstImageCharPoints == null)
+            if (firstImageCharPoints == null)
             {
                 firstImageCharPoints = new List<Point>();
             }
@@ -307,7 +315,7 @@ namespace ImageMorphing
                 {
                     foreach (Point point in firstImageCharPoints)
                     {
-                        
+
                         using (Graphics gr = Graphics.FromImage(bm))
                         {
                             gr.DrawEllipse(Pens.Red,
@@ -316,7 +324,7 @@ namespace ImageMorphing
                         }
                     }
                 }
-                
+
                 pictureBox1.Image = new Bitmap(bm, new Size(pictureBox1.Width, pictureBox1.Height));
             }
         }
@@ -342,10 +350,20 @@ namespace ImageMorphing
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            int[] relDist = new int[2];
-            int[] outputCharPoints = new int[2];
-            int result = CalcNumerator(0, 0, 0, 0, 5, relDist, outputCharPoints);
-            textBox5.Text = System.Convert.ToString(result);
+            unsafe
+            {
+                int myNumber = 3;
+                int mySecondNr = 5;
+                int* classicPtr = &myNumber;
+                int[] relDist = new int[3]{5,5,5};
+
+                fixed (int* outPtr = &relDist[0])
+                {
+                    //int sum = Addition(myNumber, mySecondNr);
+                    int result = CalcNumerator(classicPtr, 3, outPtr);
+                    textBox5.Text = System.Convert.ToString(result);
+                }
+            }
             /*
             try
             {
@@ -466,19 +484,21 @@ namespace ImageMorphing
         }
         public void createOutputImage()
         {
-            outputImage = new Bitmap(firstImage.Width, firstImage.Height, PixelFormat.Format24bppRgb);
+            /* outputImage = new Bitmap(firstImage.Width, firstImage.Height, PixelFormat.Format24bppRgb);
 
-            /*  Rectangle outputRect = new Rectangle(0, 0, firstImage.Width, firstImage.Height);
+               Rectangle outputRect = new Rectangle(0, 0, firstImage.Width, firstImage.Height);
 
-              BitmapData outputBmpData =
-              outputImage.LockBits(outputRect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
-              outputImage.PixelFormat);
+               BitmapData outputBmpData =
+               outputImage.LockBits(outputRect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
+               outputImage.PixelFormat);
 
-              IntPtr outputPtr = outputBmpData.Scan0;
+               IntPtr outputPtr = outputBmpData.Scan0;
 
-              int outputLen = Math.Abs(outputBmpData.Stride) * outputImage.Height;
-              byte[] outputRGB = new byte[outputLen];
-              outputImage.UnlockBits(outputBmpData);*/
+               int outputLen = Math.Abs(outputBmpData.Stride) * outputImage.Height;
+               byte[] outputRGB = new byte[outputLen];
+               outputImage.UnlockBits(outputBmpData);*/
+
+
             int firstLen = firstImageCharPoints.Count;
             int secondLen = secondImageCharPoints.Count;
             int outputLen = getOutputCharPointsCount(firstLen, secondLen);
@@ -515,7 +535,7 @@ namespace ImageMorphing
 
             outputImage.Save("output.jpg", ImageFormat.Jpeg);
         }
-        private void setCharacteristicPoints(int[][] outputCharPoints, 
+        private void setCharacteristicPoints(int[][] outputCharPoints,
             int[][] firstPoints, int[][] secondPoints, int charPointsNumber, double lambda)
         {
             for (int i = 0; i < charPointsNumber; i++)
@@ -526,17 +546,17 @@ namespace ImageMorphing
 
         }
 
-        private void calculateRelativeDistances(int[][] RelDistFirst, int[][] RelDistSecond, int[][]firstPoints,
-            int[][]secondPoints, int[][]outputCharPoints, int charPointsNumber)
+        private void calculateRelativeDistances(int[][] RelDistFirst, int[][] RelDistSecond, int[][] firstPoints,
+            int[][] secondPoints, int[][] outputCharPoints, int charPointsNumber)
         {
             for (int i = 0; i < charPointsNumber; i++)
             {
                 RelDistFirst[i] = new int[2] { firstPoints[i][0] - outputCharPoints[i][0], firstPoints[i][1] - outputCharPoints[i][1] };
-                RelDistSecond[i] = new int[2] { secondPoints[i][0] - outputCharPoints[i][0], secondPoints[i][1] - outputCharPoints[i][1]};
+                RelDistSecond[i] = new int[2] { secondPoints[i][0] - outputCharPoints[i][0], secondPoints[i][1] - outputCharPoints[i][1] };
             }
         }
         private void morphingAlgorithm(int max, double lambda, int[][] outputCharPoints,
-           int[][] RelDistFirst, int[][] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint, 
+           int[][] RelDistFirst, int[][] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint,
            double[] secondPoint)
         {
             int[] RGB = new int[3];
@@ -545,9 +565,9 @@ namespace ImageMorphing
             {
                 for (int i = 1; i < outputImage.Width; i++)
                 {
-                    
+
                     myMorpher.determinePointsForObtainingColor(i, j, max, outputCharPoints,
-            RelDistFirst,  RelDistSecond,  firstColorSource,  secondColorSource, firstPoint,  secondPoint);
+            RelDistFirst, RelDistSecond, firstColorSource, secondColorSource, firstPoint, secondPoint);
                     //UWAGA NA KOLEJNOSC SKŁADOWYCH RGB!!!
                     /*      outputRGB[counter] = System.Convert.ToByte(RGB[2]);
                           outputRGB[counter + 1] = System.Convert.ToByte(RGB[1]);
@@ -646,6 +666,7 @@ namespace ImageMorphing
         private Label label3;
     }
 }
+
 
 
 

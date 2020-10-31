@@ -34,13 +34,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="ASMTest.asm">
-      <Filter>Pliki źródłowe</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="ASMTest.def">
       <Filter>Pliki źródłowe</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="ASMTest.asm">
+      <Filter>Pliki źródłowe</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

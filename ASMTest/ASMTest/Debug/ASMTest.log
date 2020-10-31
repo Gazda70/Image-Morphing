@@ -1,8 +1,11 @@
 ﻿  Assembling ASMTest.asm...
-ASMTest.asm(29): warning A6004: procedure argument or local not referenced : resX
-ASMTest.asm(29): warning A6004: procedure argument or local not referenced : resY
-ASMTest.asm(29): warning A6004: procedure argument or local not referenced : max
-ASMTest.asm(29): warning A6004: procedure argument or local not referenced : relDistLen
-ASMTest.asm(29): warning A6004: procedure argument or local not referenced : relDist
-ASMTest.asm(29): warning A6004: procedure argument or local not referenced : outputCharPoints
+ASMTest.asm(26): warning A6004: procedure argument or local not referenced : cumulatedDenom
+ASMTest.asm(26): warning A6004: procedure argument or local not referenced : resX
+ASMTest.asm(26): warning A6004: procedure argument or local not referenced : resY
+ASMTest.asm(26): warning A6004: procedure argument or local not referenced : max
+ASMTest.asm(26): warning A6004: procedure argument or local not referenced : relDistLen
+ASMTest.asm(26): warning A6004: procedure argument or local not referenced : oCPLen
+ASMTest.asm(26): warning A6004: procedure argument or local not referenced : relDist
+ASMTest.asm(26): warning A6004: procedure argument or local not referenced : outputCharPoints
+     Trwa tworzenie biblioteki C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\Debug\ASMTest.lib i obiektu C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\Debug\ASMTest.exp
   ASMTest.vcxproj -> C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\Debug\ASMTest.dll
