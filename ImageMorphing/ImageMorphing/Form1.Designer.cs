@@ -360,8 +360,10 @@ namespace ImageMorphing
                 int oCPLen = 3;
                 int[,] outputCharPoints = new int[3, 2] { { 5, 6 }, { 5, 5 }, { 5, 4 } };
                 int[] result = new int[2] { 3, 3};
-                double output = CalcNumerator(result, resX, resY, max, relDistLen, relDist,outputCharPoints);
-                textBox5.Text = System.Convert.ToString(output);
+                // double output = CalcNumerator(result, resX, resY, max, relDistLen, relDist,outputCharPoints);
+                myMorpher = new Morphing();
+                double[] outcome = myMorpher.calcNumerator(resX, resY, max, relDist, outputCharPoints);
+                textBox5.Text = System.Convert.ToString(outcome[1]);
             }
             /*
             try

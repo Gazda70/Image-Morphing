@@ -5,9 +5,10 @@ resX QWORD 0
 resY QWORD 0
 max QWORD 0
 relDistLen QWORD 0
-oCPLen QWORD 0
-actualDenom REAL8 0.0
+help QWORD 0.0
 cumulatedDenom REAL8 0.0
+zero REAL8 0.0
+one REAL8 1.0
 
 .code
 
@@ -25,13 +26,23 @@ MOV relDistLen, RAX
 ; [rsp + 8 * 6] = > adres tablicy z dystansami relatywnymi
 ; [rsp + 8 * 7] = > adres tablicy z punktami charakterystycznymi
 
+; inicjalizacja zbiorczego mianownika, rejestrów do przechowywania wspó³rzêdnych
+; w trakcie pracy pêtli oraz tablicy na wynik
+MOVSD XMM3, zero
+MOVSD XMM6, zero
+MOVSD XMM7, zero
+MOV R11, 0
+MOV [RCX], R11
+MOV [RCX + 4], R11
+
 ; licznik pêtli
 MOV R10, 0
 MOV RAX, 0
 ; pêtla przechodz¹ca przez tablicê punktów charakterystycznych
 charPointsLoop:
 
-; wyznaczenie ró¿nicy wspó³rzêdnych aktualnego punktu charatkerystycznego
+
+; wyznaczenie ró¿nicy wspó³rzêdnych aktualnego punktu charakterystycznego
 ; oraz wspó³rzêdnych aktualnego piksela
 MOV RBX, QWORD PTR[RSP + 8 * 7]
 MOV R12, [RBX]
@@ -46,22 +57,71 @@ MOV R12, RAX
 MOV RAX, R11
 MUL RAX
 ADD RAX, R12
-MOV actualDenom, RAX
+
+; sprawdzenie czy suma jest niezerowa
+CMP RAX, 0
+JE ifzero
+MOV help, RAX
+
 ; konwersja na liczbê zmiennoprzecinkow¹ w celu umo¿liwienia dalszych obliczeñ
- CVTDQ2PD XMM0, actualDenom
-; VRCP14PD XMM1, XMM0
-; MOVSD XMM0, XMM1
+CVTDQ2PD XMM1, help
 
-ifzero:
+; obliczenie odwrotnoœci acutalDenom i dodanie jej do cumulatedDenom
+MOVSD XMM0, one
+DIVSD XMM0, XMM1
+; teoretycznie mo¿na zast¹piæ tym ale nie dzia³a = > VRCP14PD XMM1, XMM0
+
+; aktualizacja wartoœci zbiorczego mianownika
+ADDSD XMM3, XMM0
+
+
+; wyci¹gniêcie z tablicy i konwersja aktualnych relatywnych dystansów
+MOV RBX, QWORD PTR[RSP + 8 * 6]
+MOV R11, [RBX]
+MOV help, R11
+MOVD XMM0, help
+CVTDQ2PD XMM4, XMM0
+MOV RBX, QWORD PTR[RSP + 8 * 6]
+MOV R11, [RBX + 4]
+MOV help, R11
+MOVD XMM0, help
+CVTDQ2PD XMM5, XMM0
+
+
+
+
+
+; podzielenie przez aktualny mianownik
+DIVSD XMM4, XMM1
+DIVSD XMM5, XMM1
+
+; dodanie do zbiorczych wspó³rzêdnych
+ADDSD XMM6, XMM4
+ADDSD XMM7, XMM5
+
+ifzero :
 ; obs³uga licznika pêtli
-; INC R10
-; CMP R10, oCPLen
-; JNE charPointsLoop
+INC R10
+CMP R10, max
+JNE charPointsLoop
 
+koniec:
+; podzielenie gotowych wartoœci wspó³rzêdnych przez zbiorczy mianownik
+DIVSD XMM6, XMM3
+DIVSD XMM7, XMM3
+
+; konwersja z powrotem na liczby ca³kowite
+CVTPD2DQ XMM1, XMM6
+CVTPD2DQ XMM2, XMM7
+
+; zapis do tablicy wynikowej
+MOV RAX, 1
+MOV [RCX], RAX
+MOV RAX, 2
+MOV [RCX + 4], RAX
 
 RET
 
 CalcNumerator ENDP
 
 END
-
