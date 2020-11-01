@@ -1,38 +1,67 @@
 
+
 .data
-col_nr QWORD 0
-row_nr QWORD 0
-zero QWORD 0
+resX QWORD 0
+resY QWORD 0
+max QWORD 0
+relDistLen QWORD 0
+oCPLen QWORD 0
+actualDenom REAL8 0.0
+cumulatedDenom REAL8 0.0
 
 .code
 
 CalcNumerator PROC
 
-; liczba wierszy
-MOV[row_nr], RCX
-; liczba kolumn - zak³adamy ¿e równa 2
-; wskaŸnik na pocz¹tek tablicy 2D
-MOV R11, RDX
-; rejestr do zsumowania wartoœci
-MOV R12, 0
+; RCX = > adres tablicy na wynik
+; po³o¿enie aktualnego pixela
+MOV resX, RDX
+MOV resY, R8
+; rozmiar tablicy z aktualnie branymi pod uwagê punktami charakterystycznymi
+MOV max, R9
+; rozmiar tablicy dytansów relatywnych
+MOV EAX, DWORD PTR[rsp + 8 * 5]
+MOV relDistLen, RAX
+; [rsp + 8 * 6] = > adres tablicy z dystansami relatywnymi
+; [rsp + 8 * 7] = > adres tablicy z punktami charakterystycznymi
 
-; licznik pêtli wierszy
+; licznik pêtli
 MOV R10, 0
+MOV RAX, 0
+; pêtla przechodz¹ca przez tablicê punktów charakterystycznych
+charPointsLoop:
 
-row_loop:
+; wyznaczenie ró¿nicy wspó³rzêdnych aktualnego punktu charatkerystycznego
+; oraz wspó³rzêdnych aktualnego piksela
+MOV RBX, QWORD PTR[RSP + 8 * 7]
+MOV R12, [RBX]
+MOV R11, [RBX + 4]
+SUB R12, resX
+SUB R11, resY
 
-ADD R12, [R11 + R10 * 8]
-ADD R12, [R11 + R10 * 8 + 4]
-
-; obs³uga licznika pêtli wierszy
-INC R10
-CMP R10, [row_nr]
-JNE row_loop
-
-; finish:
+; wyznaczenie sumy kwadratów wczeœniej obliczonych ró¿nic
 MOV RAX, R12
+MUL RAX
+MOV R12, RAX
+MOV RAX, R11
+MUL RAX
+ADD RAX, R12
+MOV actualDenom, RAX
+; konwersja na liczbê zmiennoprzecinkow¹ w celu umo¿liwienia dalszych obliczeñ
+ CVTDQ2PD XMM0, actualDenom
+; VRCP14PD XMM1, XMM0
+; MOVSD XMM0, XMM1
+
+ifzero:
+; obs³uga licznika pêtli
+; INC R10
+; CMP R10, oCPLen
+; JNE charPointsLoop
+
+
 RET
 
 CalcNumerator ENDP
 
 END
+

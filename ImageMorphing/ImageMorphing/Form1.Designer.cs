@@ -17,8 +17,8 @@ namespace ImageMorphing
         //int cumulatedDenom, int outputCharPoints,
         //    int resX, int resY, int max, int relDistLen, int oCPLen, int[] relDist
 
-        static unsafe extern int CalcNumerator(int resX, int resY, int max, 
-            int relDistLen,int[,] relDist, int oCPLen, int[,] outputCharPoints);
+        static unsafe extern double CalcNumerator(int[] result, int resX, int resY, int max, int relDistLen,
+            int[,] relDist, int[,] outputCharPoints);
         //static unsafe extern void CalcNumerator(int first, double sixth);
 
 
@@ -352,12 +352,16 @@ namespace ImageMorphing
         {
             unsafe
             {
-                int myNumber = 3;
-                int mySecondNr = 5;
-                int* classicPtr = &myNumber;
+                int resX = 4;
+                int resY = 3;
+                int max = 1;
+                int relDistLen = 3;
                 int[,] relDist = new int[3, 2] { { 5, 6 }, { 5, 5 }, { 5, 4 } };
-                int result = CalcNumerator(3, relDist);
-                textBox5.Text = System.Convert.ToString(result);
+                int oCPLen = 3;
+                int[,] outputCharPoints = new int[3, 2] { { 5, 6 }, { 5, 5 }, { 5, 4 } };
+                int[] result = new int[2] { 3, 3};
+                double output = CalcNumerator(result, resX, resY, max, relDistLen, relDist,outputCharPoints);
+                textBox5.Text = System.Convert.ToString(output);
             }
             /*
             try
