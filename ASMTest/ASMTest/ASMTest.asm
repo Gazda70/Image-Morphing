@@ -1,41 +1,36 @@
 
 .data
-counter QWORD 5
+col_nr QWORD 0
+row_nr QWORD 0
 zero QWORD 0
 
 .code
 
-Addition PROC
-
-RET
-Addition ENDP
-
-; ADD    ECX, DWORD PTR[RSP + 28H]; add overflow parameter to first parameter
-; ADD    ECX, R9D; add other three register parameters
-; ADD    ECX, R8D;
-; ADD    ECX, EDX;
-; MOVD   XMM0, ECX; move doubleword ECX into XMM0
-; CVTDQ2PD  XMM0, XMM0; convert doubleword to floating point
-; MOVSD  XMM1, realVal; load 1.5
-; ADDSD  XMM1, MMWORD PTR[RSP + 30H]; add parameter
-; DIVSD  XMM0, XMM1; do division, answer in xmm0
-
 CalcNumerator PROC
 
-MOV R11, zero
-MOV R14, zero
-MOV R12, R8
-MOV RSI, R12
-MOV R13, [RCX]
-looper:
-ADD R11, [R12]
-MOV R12, [RSI + R14 * 8]
-INC R14
-CMP R14, R13
-JE finish
-JMP looper
-finish:
-MOV [R8], R11
+; liczba wierszy
+MOV[row_nr], RCX
+; liczba kolumn - zak³adamy ¿e równa 2
+; wskaŸnik na pocz¹tek tablicy 2D
+MOV R11, RDX
+; rejestr do zsumowania wartoœci
+MOV R12, 0
+
+; licznik pêtli wierszy
+MOV R10, 0
+
+row_loop:
+
+ADD R12, [R11 + R10 * 8]
+ADD R12, [R11 + R10 * 8 + 4]
+
+; obs³uga licznika pêtli wierszy
+INC R10
+CMP R10, [row_nr]
+JNE row_loop
+
+; finish:
+MOV RAX, R12
 RET
 
 CalcNumerator ENDP

@@ -1,0 +1,17 @@
+CalcNumerator PROC
+
+MOV R11, zero
+MOV RAX, zero
+MOV R12, RDX
+looper :
+ADD RAX, [R8 + R11 * 4]
+INC R11
+CMP R11, R12
+JE finish
+JMP looper
+
+finish:
+
+RET
+
+CalcNumerator ENDP

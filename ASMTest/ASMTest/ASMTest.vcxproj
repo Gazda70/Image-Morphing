@@ -155,6 +155,7 @@
       <ModuleDefinitionFile>ASMTest.def</ModuleDefinitionFile>
       <EntryPointSymbol>
       </EntryPointSymbol>
+      <AssemblyDebug>true</AssemblyDebug>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

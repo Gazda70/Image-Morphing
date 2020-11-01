@@ -12,13 +12,13 @@ namespace ImageMorphing
     unsafe partial class Form1
     {
 
-        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\x64\Release\ASMTest.dll")]
-        static extern int Addition(int x, int y);
+
         [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\x64\Release\ASMTest.dll")]
         //int cumulatedDenom, int outputCharPoints,
         //    int resX, int resY, int max, int relDistLen, int oCPLen, int[] relDist
 
-        static unsafe extern int CalcNumerator(int* first, int second, int* third);
+        static unsafe extern int CalcNumerator(int resX, int resY, int max, 
+            int relDistLen,int[,] relDist, int oCPLen, int[,] outputCharPoints);
         //static unsafe extern void CalcNumerator(int first, double sixth);
 
 
@@ -355,14 +355,9 @@ namespace ImageMorphing
                 int myNumber = 3;
                 int mySecondNr = 5;
                 int* classicPtr = &myNumber;
-                int[] relDist = new int[3]{5,5,5};
-
-                fixed (int* outPtr = &relDist[0])
-                {
-                    //int sum = Addition(myNumber, mySecondNr);
-                    int result = CalcNumerator(classicPtr, 3, outPtr);
-                    textBox5.Text = System.Convert.ToString(result);
-                }
+                int[,] relDist = new int[3, 2] { { 5, 6 }, { 5, 5 }, { 5, 4 } };
+                int result = CalcNumerator(3, relDist);
+                textBox5.Text = System.Convert.ToString(result);
             }
             /*
             try
@@ -393,8 +388,6 @@ namespace ImageMorphing
             try
             {
 
-                int res = Addition(Convert.ToInt32(textBox3.Text), Convert.ToInt32(textBox4.Text));
-                textBox5.Text = res.ToString();
 
             }
             catch (DllNotFoundException err)
