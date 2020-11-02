@@ -41,10 +41,12 @@ MOV RAX, 0
 ; pêtla przechodz¹ca przez tablicê punktów charakterystycznych
 charPointsLoop:
 
-
 ; wyznaczenie ró¿nicy wspó³rzêdnych aktualnego punktu charakterystycznego
 ; oraz wspó³rzêdnych aktualnego piksela
 MOV RBX, QWORD PTR[RSP + 8 * 7]
+MOV RAX, 8
+MUL R10
+ADD RBX, RAX
 MOV R12, [RBX]
 MOV R11, [RBX + 4]
 SUB R12, resX
@@ -62,63 +64,76 @@ ADD RAX, R12
 CMP RAX, 0
 JE ifzero
 MOV help, RAX
+MOVSD XMM2, help
+
 
 ; konwersja na liczbê zmiennoprzecinkow¹ w celu umo¿liwienia dalszych obliczeñ
-CVTDQ2PD XMM1, help
+CVTDQ2PD XMM1, XMM2
 
 ; obliczenie odwrotnoœci acutalDenom i dodanie jej do cumulatedDenom
 MOVSD XMM0, one
 DIVSD XMM0, XMM1
-; teoretycznie mo¿na zast¹piæ tym ale nie dzia³a = > VRCP14PD XMM1, XMM0
 
+; teoretycznie mo¿na zast¹piæ tym ale nie dzia³a = > VRCP14PD XMM1, XMM0
 ; aktualizacja wartoœci zbiorczego mianownika
 ADDSD XMM3, XMM0
 
+; inkrementacja indeksu
+MOV RAX, 8
+MUL R10
 
 ; wyci¹gniêcie z tablicy i konwersja aktualnych relatywnych dystansów
 MOV RBX, QWORD PTR[RSP + 8 * 6]
+
+ADD RBX, RAX
+
 MOV R11, [RBX]
 MOV help, R11
 MOVD XMM0, help
 CVTDQ2PD XMM4, XMM0
-MOV RBX, QWORD PTR[RSP + 8 * 6]
+
 MOV R11, [RBX + 4]
 MOV help, R11
 MOVD XMM0, help
 CVTDQ2PD XMM5, XMM0
 
-
-
-
-
 ; podzielenie przez aktualny mianownik
 DIVSD XMM4, XMM1
 DIVSD XMM5, XMM1
+
 
 ; dodanie do zbiorczych wspó³rzêdnych
 ADDSD XMM6, XMM4
 ADDSD XMM7, XMM5
 
-ifzero :
+
+ifzero:
 ; obs³uga licznika pêtli
 INC R10
 CMP R10, max
 JNE charPointsLoop
+
 
 koniec:
 ; podzielenie gotowych wartoœci wspó³rzêdnych przez zbiorczy mianownik
 DIVSD XMM6, XMM3
 DIVSD XMM7, XMM3
 
+; OBLICZENIA DZIA£AJ¥
+
+com1 macro
 ; konwersja z powrotem na liczby ca³kowite
 CVTPD2DQ XMM1, XMM6
 CVTPD2DQ XMM2, XMM7
+endm
 
 ; zapis do tablicy wynikowej
-MOV RAX, 1
-MOV [RCX], RAX
-MOV RAX, 2
-MOV [RCX + 4], RAX
+MOVSD XMM0, XMM6
+; MOVD XMM0, XMM3
+; MOVQ RAX, XMM1
+; MOV[RCX], RAX
+; MOV RAX, 2
+; MOV[RCX + 4], RAX
 
 RET
 
