@@ -11,7 +11,7 @@ namespace MorphingLibrary {
     {
 
         public Morphing() { }
-        public double[] calcNumerator(int resX, int resY, int max, int[,] relDist, int[,] outputCharPoints)
+        public double[] calcPoint(int resX, int resY, int max, int[,] relDist, int[,] outputCharPoints)
         {
             double[] total = new double[2];
             double actualDenom = 0;

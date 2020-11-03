@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using MorphingLibrary;
 
@@ -319,7 +320,7 @@ namespace ImageMorphing
 
                         using (Graphics gr = Graphics.FromImage(bm))
                         {
-                            gr.DrawEllipse(Pens.Red,
+                            gr.DrawEllipse(Pens.Blue,
                                     new Rectangle(point.X, point.Y, 4, 4)
                                 );
                         }
@@ -340,7 +341,7 @@ namespace ImageMorphing
                     {
                         using (Graphics gr = Graphics.FromImage(bm))
                         {
-                            gr.DrawEllipse(Pens.Red,
+                            gr.DrawEllipse(Pens.Blue,
                                     new Rectangle(point.X, point.Y, 4, 4)
                                 );
                         }
@@ -537,7 +538,8 @@ namespace ImageMorphing
 
             for (int i = 1; i < outputLen; i++)
             {
-                morphingAlgorithm(i, lambda, oPoints, fRelDist, sRelDist, fColorSource, sColorSource, fPoint, sPoint);
+                morphingAlgorithmThreads(i, lambda, oPoints, fRelDist, sRelDist, fColorSource, 
+                    sColorSource, fPoint, sPoint, 2);
             }
 
             //Copy the RGB values back to the bitmap
@@ -587,23 +589,103 @@ namespace ImageMorphing
             }
         }
 
-        public void determinePointsForObtainingColorCSharp(int resX, int resY, int max, int[,] outputCharPoints,
-        int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint, double[] secondPoint)
+        private void determinePointsForObtainingColorCSharpThreads(int resX, int resY, int max, int[,] outputCharPoints,
+        int[,] RelDistFirst, int[,] RelDistSecond, int[,,] firstColorSource, int[,,] secondColorSource, 
+        double[] firstPoint, double[] secondPoint)
         {
-             firstPoint = myMorpher.calcNumerator(resX, resY, max, RelDistFirst, outputCharPoints);
-             secondPoint = myMorpher.calcNumerator(resX, resY, max, RelDistSecond,outputCharPoints);
+            /*  outputCharPointsLock.AcquireWriterLock(Timeout.Infinite);
+              relDistLock.AcquireWriterLock(Timeout.Infinite);*/
+            lock (mainLocker)
+            {
+                firstPoint = myMorpher.calcPoint(resX, resY, max, RelDistFirst, outputCharPoints);
+                secondPoint = myMorpher.calcPoint(resX, resY, max, RelDistSecond, outputCharPoints);
+            }
+         /*   outputCharPointsLock.ReleaseWriterLock();
+            relDistLock.ReleaseWriterLock();*/
+
             if (!(Double.IsNaN(firstPoint[0]) || Double.IsNaN(firstPoint[1])
             || Double.IsNaN(secondPoint[0]) || Double.IsNaN(secondPoint[1])))
             {
-                firstColorSource[0] = System.Convert.ToInt32(firstPoint[0]) + resX;
-                firstColorSource[1] = System.Convert.ToInt32(firstPoint[1]) + resY;
-                secondColorSource[0] = System.Convert.ToInt32(secondPoint[0]) + resX;
-                secondColorSource[1] = System.Convert.ToInt32(secondPoint[1]) + resY;
+                colorSourcesLock.AcquireWriterLock(Timeout.Infinite);
+                firstColorSource[resX, resY, 0] = System.Convert.ToInt32(firstPoint[0]) + resX;
+                firstColorSource[resX, resY, 1] = System.Convert.ToInt32(firstPoint[1]) + resY;
+                secondColorSource[resX, resY, 0] = System.Convert.ToInt32(secondPoint[0]) + resX;
+                secondColorSource[resX, resY, 1] = System.Convert.ToInt32(secondPoint[1]) + resY;
+                colorSourcesLock.ReleaseWriterLock();
             }
         }
-        private void morphingAlgorithm(int max, double lambda, int[,] outputCharPoints,
+
+        private void loopChunkThreads(int startH, int finishH, int imageWidth, int max, int[,] outputCharPoints,
+        int[,] RelDistFirst, int[,] RelDistSecond, int[,,] firstColorSources, int[,,] secondColorSources)
+        {
+            double[] firstPoint = new double[2];
+            double[] secondPoint = new double[2];
+            for (int j = startH; j < finishH; j++)
+            {
+                for (int i = 0; i < imageWidth; i++)
+                {
+                    determinePointsForObtainingColorCSharpThreads(i, j, max, outputCharPoints,
+            RelDistFirst, RelDistSecond, firstColorSources, secondColorSources, firstPoint, secondPoint);
+                }
+            }
+        }
+
+        private object drawLock;
+        private object mainLocker;
+        private ReaderWriterLock colorSourcesLock;
+        private ReaderWriterLock outputCharPointsLock;
+        private ReaderWriterLock relDistLock;
+        private void morphingAlgorithmThreads(int max, double lambda, int[,] outputCharPoints,
            int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint,
-           double[] secondPoint)
+           double[] secondPoint, int threadNumber)
+        {
+            drawLock = new object();
+            mainLocker = new object();
+            colorSourcesLock = new ReaderWriterLock();
+            outputCharPointsLock = new ReaderWriterLock();
+            relDistLock = new ReaderWriterLock();
+            int[,,] firstColorSources = new int[outputImage.Height, outputImage.Width, 2];
+            int[,,] secondColorSources = new int[outputImage.Height, outputImage.Width, 2];
+            Thread[] threads = new Thread[threadNumber];
+            int tableChunkLeftover = outputImage.Height % threadNumber;
+            int tableChunkSize = outputImage.Height / threadNumber;
+            int startH = 0;
+            int finishH = 0;
+            for (int k = 0; k < threads.Length; k++)
+            {
+                startH = k * tableChunkSize;
+                finishH = startH + tableChunkSize;
+                Thread t = new Thread(new ThreadStart(() => loopChunkThreads(startH, finishH, outputImage.Width,
+                max, outputCharPoints, RelDistFirst, RelDistSecond, firstColorSources, secondColorSources
+                )));
+                t.Name = k.ToString();
+                threads[k] = t;
+                t.Start();
+            }
+            if (tableChunkLeftover != 0)
+            {
+                Thread last = new Thread(new ThreadStart(() => loopChunkThreads(
+                finishH, finishH + tableChunkLeftover, outputImage.Width,
+            max, outputCharPoints, RelDistFirst, RelDistSecond, firstColorSources, secondColorSources
+            )));
+                last.Name = "last";
+                last.Start();
+            }
+
+            lock (drawLock){
+                for (int j = 1; j < outputImage.Height; j++)
+                {
+                    for (int i = 1; i < outputImage.Width; i++)
+                    {
+                        //      Color myColor = setColorForOutputPixel(firstColorSource, secondColorSource, lambda);
+                        //     outputImage.SetPixel(i, j, myColor);
+                    }
+                }
+            }
+        }
+        private void morphingAlgorithmNormal(int max, double lambda, int[,] outputCharPoints,
+   int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint,
+   double[] secondPoint)
         {
             int[] RGB = new int[3];
             int counter = 0;
@@ -614,11 +696,6 @@ namespace ImageMorphing
 
                     determinePointsForObtainingColorASM(i, j, max, outputCharPoints,
             RelDistFirst, RelDistSecond, firstColorSource, secondColorSource, firstPoint, secondPoint);
-                    //UWAGA NA KOLEJNOSC SKŁADOWYCH RGB!!!
-                    /*      outputRGB[counter] = System.Convert.ToByte(RGB[2]);
-                          outputRGB[counter + 1] = System.Convert.ToByte(RGB[1]);
-                          outputRGB[counter + 2] = System.Convert.ToByte(RGB[0]);
-                          counter += 3;*/
                     Color myColor = setColorForOutputPixel(firstColorSource, secondColorSource, lambda);
                     outputImage.SetPixel(i, j, myColor);
                 }
