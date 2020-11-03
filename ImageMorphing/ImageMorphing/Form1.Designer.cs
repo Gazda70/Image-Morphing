@@ -17,7 +17,11 @@ namespace ImageMorphing
         //int cumulatedDenom, int outputCharPoints,
         //    int resX, int resY, int max, int relDistLen, int oCPLen, int[] relDist
 
-        static unsafe extern double CalcNumerator(int[] result, int resX, int resY, int max, int relDistLen,
+        static unsafe extern double CalcNumeratorFirst(double[] result, int resX, int resY, int max, int relDistLen,
+            int[,] relDist, int[,] outputCharPoints);
+
+        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\x64\Debug\ASMTest.dll")]
+        static unsafe extern double CalcNumeratorSecond(double[] result, int resX, int resY, int max, int relDistLen,
             int[,] relDist, int[,] outputCharPoints);
         //static unsafe extern void CalcNumerator(int first, double sixth);
 
@@ -349,7 +353,8 @@ namespace ImageMorphing
         {
             unsafe
             {
-                int resX = 4;
+                
+             /*   int resX = 4;
                 int resY = 3;
                 int max = 3;
                 int relDistLen = 3;
@@ -358,14 +363,16 @@ namespace ImageMorphing
                 int[,] outputCharPoints = new int[3, 2] { { 5, 6 }, { 5, 5 }, { 5, 4 } };
                 int[] asmResult = new int[2] { 3, 3};
                 myMorpher = new Morphing();
-                double result = CalcNumerator(asmResult, resX, resY, max, relDistLen, relDist,outputCharPoints);
-                 double[] csResult = myMorpher.calcNumerator(resX, resY, max, relDist, outputCharPoints);
-                 textBox3.Text = System.Convert.ToString(result);
-                 //textBox4.Text = System.Convert.ToString(asmResult[1]);
+                double resultF = CalcNumeratorFirst(asmResult, resX, resY, max, relDistLen, relDist,outputCharPoints);
+                double resultS = CalcNumeratorSecond(asmResult, resX, resY, max, relDistLen, relDist, outputCharPoints);
+                double[] csResult = myMorpher.calcNumerator(resX, resY, max, relDist, outputCharPoints);
+                 textBox3.Text = System.Convert.ToString(resultF);
+                 textBox4.Text = System.Convert.ToString(resultS);
                  textBox5.Text = System.Convert.ToString(csResult[0]);
-                 //textBox6.Text = System.Convert.ToString(csResult[1]);
+                 textBox6.Text = System.Convert.ToString(csResult[1]);*/
 
-                //createOutputImage();
+                myMorpher = new Morphing();
+                createOutputImage();
             }
             /*
             try
@@ -510,8 +517,8 @@ namespace ImageMorphing
             int[,] sRelDist = new int[outputLen, 2];
             int[] fColorSource = new int[2];
             int[] sColorSource = new int[2];
-            int[] fPoint = new int[2];
-            int[] sPoint = new int[2];
+            double[] fPoint = new double[2];
+            double[] sPoint = new double[2];
             double lambda = System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
                     / System.Convert.ToDouble(this.trackBar2.Maximum));
 
@@ -561,13 +568,30 @@ namespace ImageMorphing
             }
         }
 
-        public void determinePointsForObtainingColor(int resX, int resY, int max, int[,] outputCharPoints,
-   int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, int[] firstPoint, int[] secondPoint)
+        public void determinePointsForObtainingColorASM(int resX, int resY, int max, int[,] outputCharPoints,
+        int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource,double[] firstPoint, double[] secondPoint)
         {
-            CalcNumerator(firstPoint, resX, resY, max, RelDistFirst.Length, RelDistFirst, outputCharPoints);
-            CalcNumerator(secondPoint, resX, resY, max, RelDistSecond.Length, RelDistSecond, outputCharPoints);
-            /* firstPoint = myMorpher.calcNumerator(resX, resY, max, RelDistFirst, outputCharPoints);
-             secondPoint = myMorpher.calcNumerator(resX, resY, max, RelDistSecond,outputCharPoints);*/
+
+            double fPoint = CalcNumeratorFirst(firstPoint, resX, resY, max, RelDistFirst.Length, RelDistFirst, outputCharPoints);
+            double sPoint = CalcNumeratorSecond(firstPoint, resX, resY, max, RelDistFirst.Length, RelDistFirst, outputCharPoints);
+            double fSPoint = CalcNumeratorFirst(secondPoint, resX, resY, max, RelDistSecond.Length, RelDistSecond, outputCharPoints);
+            double sSPoint = CalcNumeratorSecond(secondPoint, resX, resY, max, RelDistSecond.Length, RelDistSecond, outputCharPoints);
+
+            if (!(Double.IsNaN(firstPoint[0]) || Double.IsNaN(firstPoint[1])
+            || Double.IsNaN(secondPoint[0]) || Double.IsNaN(secondPoint[1])))
+            {
+                firstColorSource[0] = System.Convert.ToInt32(fPoint) + resX;
+                firstColorSource[1] = System.Convert.ToInt32(sPoint) + resY;
+                secondColorSource[0] = System.Convert.ToInt32(fSPoint) + resX;
+                secondColorSource[1] = System.Convert.ToInt32(sSPoint) + resY;
+            }
+        }
+
+        public void determinePointsForObtainingColorCSharp(int resX, int resY, int max, int[,] outputCharPoints,
+        int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint, double[] secondPoint)
+        {
+             firstPoint = myMorpher.calcNumerator(resX, resY, max, RelDistFirst, outputCharPoints);
+             secondPoint = myMorpher.calcNumerator(resX, resY, max, RelDistSecond,outputCharPoints);
             if (!(Double.IsNaN(firstPoint[0]) || Double.IsNaN(firstPoint[1])
             || Double.IsNaN(secondPoint[0]) || Double.IsNaN(secondPoint[1])))
             {
@@ -578,8 +602,8 @@ namespace ImageMorphing
             }
         }
         private void morphingAlgorithm(int max, double lambda, int[,] outputCharPoints,
-           int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, int[] firstPoint,
-           int[] secondPoint)
+           int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint,
+           double[] secondPoint)
         {
             int[] RGB = new int[3];
             int counter = 0;
@@ -588,7 +612,7 @@ namespace ImageMorphing
                 for (int i = 1; i < outputImage.Width; i++)
                 {
 
-                    determinePointsForObtainingColor(i, j, max, outputCharPoints,
+                    determinePointsForObtainingColorASM(i, j, max, outputCharPoints,
             RelDistFirst, RelDistSecond, firstColorSource, secondColorSource, firstPoint, secondPoint);
                     //UWAGA NA KOLEJNOSC SKŁADOWYCH RGB!!!
                     /*      outputRGB[counter] = System.Convert.ToByte(RGB[2]);
@@ -617,13 +641,13 @@ namespace ImageMorphing
             Color firstColor = Color.Black;
             Color secondColor = Color.Black;
 
-            if (firstColorSource[0] >= outputImage.Width)
+            if (firstColorSource[0] >= firstImage.Width)
             {
-                firstColorSource[0] = outputImage.Width - 1;
+                firstColorSource[0] = firstImage.Width - 1;
             }
-            if (firstColorSource[1] >= outputImage.Height)
+            if (firstColorSource[1] >= firstImage.Height)
             {
-                firstColorSource[1] = outputImage.Height - 1;
+                firstColorSource[1] = firstImage.Height - 1;
             }
 
             if (firstColorSource[0] <= 0)
@@ -636,13 +660,13 @@ namespace ImageMorphing
             }
             firstColor = firstImage.GetPixel(firstColorSource[0], firstColorSource[1]);
 
-            if (secondColorSource[0] >= outputImage.Width)
+            if (secondColorSource[0] >= secondImage.Width)
             {
-                secondColorSource[0] = outputImage.Width - 1;
+                secondColorSource[0] = secondImage.Width - 1;
             }
-            if (secondColorSource[1] >= outputImage.Height)
+            if (secondColorSource[1] >= secondImage.Height)
             {
-                secondColorSource[1] = outputImage.Height - 1;
+                secondColorSource[1] = secondImage.Height - 1;
             }
 
             if (secondColorSource[0] <= 0)
@@ -653,20 +677,32 @@ namespace ImageMorphing
             {
                 secondColorSource[1] = 1;
             }
-            secondColor = secondImage.GetPixel(secondColorSource[0], secondColorSource[1]);
+
             Color toReturn = Color.Black;
+            secondColor = secondImage.GetPixel(secondColorSource[0], secondColorSource[1]);
+            /*     if (checkRGB(firstColor.R) && checkRGB(firstColor.G) && checkRGB(firstColor.B)
+                     && checkRGB(secondColor.R) && checkRGB(secondColor.G) && checkRGB(secondColor.B))
+                 {*/
             try
             {
                 toReturn = Color.FromArgb(
-                    Convert.ToInt32(firstColor.R * (1 - lambda) + secondColor.R * lambda),
-                    Convert.ToInt32(firstColor.G * (1 - lambda) + secondColor.G * lambda),
-                    Convert.ToInt32(firstColor.B * (1 - lambda) + secondColor.B * lambda));
-            }catch(Exception e)
+                     Convert.ToInt32(firstColor.R * (1 - lambda) + secondColor.R * lambda),
+                     Convert.ToInt32(firstColor.G * (1 - lambda) + secondColor.G * lambda),
+                     Convert.ToInt32(firstColor.B * (1 - lambda) + secondColor.B * lambda));
+            }
+            catch(Exception e)
             {
 
             }
 
+            
             return toReturn;
+        }
+        private bool checkRGB(int color)
+        {
+            if (System.Convert.ToByte(color)>= 0 && System.Convert.ToByte(color) < 256)
+                return true;
+            return false;
         }
         private PictureBox pictureBox1;
         private TextBox textBox1;

@@ -26,8 +26,6 @@ namespace MorphingLibrary {
                     total[0] += relDist[i, 0] / actualDenom;
                     total[1] += relDist[i, 1] / actualDenom;
                 }
-
-
             }
             total[0] = total[0] / cumulatedDenom;
             total[1] = total[1] / cumulatedDenom;
