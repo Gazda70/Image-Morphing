@@ -1,30 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using MorphingLibrary;
 
+
 namespace ImageMorphing
 {
 
-    unsafe partial class Form1
+    partial class Form1
     {
+        const string ASM_DLL_Path = 
+            "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ASMTest/x64/Debug/ASMTest.dll";
+        const string DEFAULT_FIRST_IMAGE_PATH =
+            "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/pies.jpg";
+        const string DEFAULT_SECOND_IMAGE_PATH =
+            "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/pies1.jpg";
+        const string DEFAULT_OUTPUT_IMAGE_PATH =
+            "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/output.jpg";
 
-
-        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\x64\Debug\ASMTest.dll")]
-        //int cumulatedDenom, int outputCharPoints,
-        //    int resX, int resY, int max, int relDistLen, int oCPLen, int[] relDist
-
+        [DllImport(@ASM_DLL_Path)]
         static unsafe extern double CalcNumeratorFirst(double[] result, int resX, int resY, int max, int relDistLen,
             int[,] relDist, int[,] outputCharPoints);
 
-        [DllImport(@"C:\Users\gazda\Desktop\Politechnicznestudia\JA\Projekt\ProjektJA\ASMTest\x64\Debug\ASMTest.dll")]
+        [DllImport(@ASM_DLL_Path)]
         static unsafe extern double CalcNumeratorSecond(double[] result, int resX, int resY, int max, int relDistLen,
             int[,] relDist, int[,] outputCharPoints);
-        //static unsafe extern void CalcNumerator(int first, double sixth);
 
 
         /// <summary>
@@ -54,149 +59,151 @@ namespace ImageMorphing
         /// 
         private void InitializeComponent()
         {
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.label2 = new System.Windows.Forms.Label();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.inputPictureBox1 = new System.Windows.Forms.PictureBox();
+            this.imagePathBox1 = new System.Windows.Forms.TextBox();
+            this.loadButton1 = new System.Windows.Forms.Button();
+            this.imagePathBox2 = new System.Windows.Forms.TextBox();
+            this.loadButton2 = new System.Windows.Forms.Button();
+            this.inputPictureBox2 = new System.Windows.Forms.PictureBox();
+            this.startMorphingButton = new System.Windows.Forms.Button();
+            this.calculationsCheckBox1 = new System.Windows.Forms.CheckBox();
+            this.calculationsMethodLabel = new System.Windows.Forms.Label();
+            this.calculationsCheckBox2 = new System.Windows.Forms.CheckBox();
+            this.threadsNumberTrackBar = new System.Windows.Forms.TrackBar();
+            this.threadsNumberLabel = new System.Windows.Forms.Label();
+            this.outputPictureBox = new System.Windows.Forms.PictureBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
-            this.trackBar2 = new System.Windows.Forms.TrackBar();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lambdaValueTrackBar = new System.Windows.Forms.TrackBar();
+            this.lambdaValueLabel = new System.Windows.Forms.Label();
             this.textBox6 = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
+            this.clearPicturesButton = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.inputPictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.inputPictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.threadsNumberTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.outputPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lambdaValueTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
-            // pictureBox1
+            // inputPictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(37, 12);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(427, 403);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
-            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+            this.inputPictureBox1.Location = new System.Drawing.Point(37, 12);
+            this.inputPictureBox1.Name = "inputPictureBox1";
+            this.inputPictureBox1.Size = new System.Drawing.Size(427, 403);
+            this.inputPictureBox1.TabIndex = 0;
+            this.inputPictureBox1.TabStop = false;
+            this.inputPictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+            this.inputPictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
             // 
-            // textBox1
+            // imagePathBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(37, 470);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(296, 22);
-            this.textBox1.TabIndex = 1;
+            this.imagePathBox1.Location = new System.Drawing.Point(37, 470);
+            this.imagePathBox1.Name = "imagePathBox1";
+            this.imagePathBox1.Size = new System.Drawing.Size(296, 22);
+            this.imagePathBox1.TabIndex = 1;
+            this.imagePathBox1.TextChanged += new System.EventHandler(this.imagePathBox1_TextChanged);
             // 
-            // button1
+            // loadButton1
             // 
-            this.button1.Location = new System.Drawing.Point(389, 466);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 31);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Load";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.loadButton1.Location = new System.Drawing.Point(389, 466);
+            this.loadButton1.Name = "loadButton1";
+            this.loadButton1.Size = new System.Drawing.Size(75, 31);
+            this.loadButton1.TabIndex = 2;
+            this.loadButton1.Text = "Load";
+            this.loadButton1.UseVisualStyleBackColor = true;
+            this.loadButton1.Click += new System.EventHandler(this.loadButton1_Click);
             // 
-            // textBox2
+            // imagePathBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(552, 470);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(296, 22);
-            this.textBox2.TabIndex = 3;
+            this.imagePathBox2.Location = new System.Drawing.Point(552, 470);
+            this.imagePathBox2.Name = "imagePathBox2";
+            this.imagePathBox2.Size = new System.Drawing.Size(296, 22);
+            this.imagePathBox2.TabIndex = 3;
             // 
-            // button2
+            // loadButton2
             // 
-            this.button2.Location = new System.Drawing.Point(904, 466);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 31);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "Load";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.loadButton2.Location = new System.Drawing.Point(904, 466);
+            this.loadButton2.Name = "loadButton2";
+            this.loadButton2.Size = new System.Drawing.Size(75, 31);
+            this.loadButton2.TabIndex = 4;
+            this.loadButton2.Text = "Load";
+            this.loadButton2.UseVisualStyleBackColor = true;
+            this.loadButton2.Click += new System.EventHandler(this.loadButton2_Click);
             // 
-            // pictureBox2
+            // inputPictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(552, 12);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(427, 403);
-            this.pictureBox2.TabIndex = 5;
-            this.pictureBox2.TabStop = false;
-            this.pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
-            this.pictureBox2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseDown);
+            this.inputPictureBox2.Location = new System.Drawing.Point(552, 12);
+            this.inputPictureBox2.Name = "inputPictureBox2";
+            this.inputPictureBox2.Size = new System.Drawing.Size(427, 403);
+            this.inputPictureBox2.TabIndex = 5;
+            this.inputPictureBox2.TabStop = false;
+            this.inputPictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
+            this.inputPictureBox2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseDown);
             // 
-            // button3
+            // startMorphingButton
             // 
-            this.button3.Location = new System.Drawing.Point(96, 644);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(133, 25);
-            this.button3.TabIndex = 6;
-            this.button3.Text = "Morph";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.startMorphingButton.Location = new System.Drawing.Point(37, 531);
+            this.startMorphingButton.Name = "startMorphingButton";
+            this.startMorphingButton.Size = new System.Drawing.Size(296, 52);
+            this.startMorphingButton.TabIndex = 6;
+            this.startMorphingButton.Text = "Morph";
+            this.startMorphingButton.UseVisualStyleBackColor = true;
+            this.startMorphingButton.Click += new System.EventHandler(this.startMorphingButton_Click);
             // 
-            // checkBox1
+            // calculationsCheckBox1
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(37, 568);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(47, 21);
-            this.checkBox1.TabIndex = 7;
-            this.checkBox1.Text = "C#";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.calculationsCheckBox1.AutoSize = true;
+            this.calculationsCheckBox1.Location = new System.Drawing.Point(833, 590);
+            this.calculationsCheckBox1.Name = "calculationsCheckBox1";
+            this.calculationsCheckBox1.Size = new System.Drawing.Size(47, 21);
+            this.calculationsCheckBox1.TabIndex = 7;
+            this.calculationsCheckBox1.Text = "C#";
+            this.calculationsCheckBox1.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // calculationsMethodLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(34, 539);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(229, 17);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "How to run expensive calculations?";
+            this.calculationsMethodLabel.AutoSize = true;
+            this.calculationsMethodLabel.Location = new System.Drawing.Point(830, 561);
+            this.calculationsMethodLabel.Name = "calculationsMethodLabel";
+            this.calculationsMethodLabel.Size = new System.Drawing.Size(229, 17);
+            this.calculationsMethodLabel.TabIndex = 8;
+            this.calculationsMethodLabel.Text = "How to run expensive calculations?";
             // 
-            // checkBox2
+            // calculationsCheckBox2
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(37, 596);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(90, 21);
-            this.checkBox2.TabIndex = 9;
-            this.checkBox2.Text = "Assembly";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.calculationsCheckBox2.AutoSize = true;
+            this.calculationsCheckBox2.Location = new System.Drawing.Point(833, 618);
+            this.calculationsCheckBox2.Name = "calculationsCheckBox2";
+            this.calculationsCheckBox2.Size = new System.Drawing.Size(90, 21);
+            this.calculationsCheckBox2.TabIndex = 9;
+            this.calculationsCheckBox2.Text = "Assembly";
+            this.calculationsCheckBox2.UseVisualStyleBackColor = true;
             // 
-            // trackBar1
+            // threadsNumberTrackBar
             // 
-            this.trackBar1.Location = new System.Drawing.Point(354, 561);
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(423, 56);
-            this.trackBar1.TabIndex = 10;
-            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            this.threadsNumberTrackBar.Location = new System.Drawing.Point(354, 561);
+            this.threadsNumberTrackBar.Name = "threadsNumberTrackBar";
+            this.threadsNumberTrackBar.Size = new System.Drawing.Size(423, 56);
+            this.threadsNumberTrackBar.TabIndex = 10;
+            this.threadsNumberTrackBar.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
-            // label2
+            // threadsNumberLabel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(351, 539);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(176, 17);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "How many threads to use?";
+            this.threadsNumberLabel.AutoSize = true;
+            this.threadsNumberLabel.Location = new System.Drawing.Point(351, 539);
+            this.threadsNumberLabel.Name = "threadsNumberLabel";
+            this.threadsNumberLabel.Size = new System.Drawing.Size(176, 17);
+            this.threadsNumberLabel.TabIndex = 11;
+            this.threadsNumberLabel.Text = "How many threads to use?";
             // 
-            // pictureBox3
+            // outputPictureBox
             // 
-            this.pictureBox3.Location = new System.Drawing.Point(1075, 12);
-            this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(427, 403);
-            this.pictureBox3.TabIndex = 12;
-            this.pictureBox3.TabStop = false;
+            this.outputPictureBox.Location = new System.Drawing.Point(1070, 12);
+            this.outputPictureBox.Name = "outputPictureBox";
+            this.outputPictureBox.Size = new System.Drawing.Size(427, 403);
+            this.outputPictureBox.TabIndex = 12;
+            this.outputPictureBox.TabStop = false;
             // 
             // textBox3
             // 
@@ -220,24 +227,24 @@ namespace ImageMorphing
             this.textBox5.TabIndex = 15;
             this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
             // 
-            // trackBar2
+            // lambdaValueTrackBar
             // 
-            this.trackBar2.Location = new System.Drawing.Point(354, 667);
-            this.trackBar2.Name = "trackBar2";
-            this.trackBar2.Size = new System.Drawing.Size(423, 56);
-            this.trackBar2.TabIndex = 17;
-            this.trackBar2.TickFrequency = 10;
-            this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
+            this.lambdaValueTrackBar.Location = new System.Drawing.Point(354, 667);
+            this.lambdaValueTrackBar.Name = "lambdaValueTrackBar";
+            this.lambdaValueTrackBar.Size = new System.Drawing.Size(423, 56);
+            this.lambdaValueTrackBar.TabIndex = 17;
+            this.lambdaValueTrackBar.TickFrequency = 10;
+            this.lambdaValueTrackBar.Scroll += new System.EventHandler(this.trackBar2_Scroll);
             // 
-            // label3
+            // lambdaValueLabel
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(351, 620);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(110, 17);
-            this.label3.TabIndex = 18;
-            this.label3.Text = "Wartość lambda";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
+            this.lambdaValueLabel.AutoSize = true;
+            this.lambdaValueLabel.Location = new System.Drawing.Point(351, 620);
+            this.lambdaValueLabel.Name = "lambdaValueLabel";
+            this.lambdaValueLabel.Size = new System.Drawing.Size(110, 17);
+            this.lambdaValueLabel.TabIndex = 18;
+            this.lambdaValueLabel.Text = "Wartość lambda";
+            this.lambdaValueLabel.Click += new System.EventHandler(this.label3_Click);
             // 
             // textBox6
             // 
@@ -246,46 +253,62 @@ namespace ImageMorphing
             this.textBox6.Size = new System.Drawing.Size(137, 22);
             this.textBox6.TabIndex = 19;
             // 
+            // clearPicturesButton
+            // 
+            this.clearPicturesButton.Location = new System.Drawing.Point(37, 603);
+            this.clearPicturesButton.Name = "clearPicturesButton";
+            this.clearPicturesButton.Size = new System.Drawing.Size(296, 50);
+            this.clearPicturesButton.TabIndex = 20;
+            this.clearPicturesButton.Text = "Clear pictures";
+            this.clearPicturesButton.UseVisualStyleBackColor = true;
+            this.clearPicturesButton.Click += new System.EventHandler(this.clearPicturesButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1617, 754);
+            this.Controls.Add(this.clearPicturesButton);
             this.Controls.Add(this.textBox6);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.trackBar2);
+            this.Controls.Add(this.lambdaValueLabel);
+            this.Controls.Add(this.lambdaValueTrackBar);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.pictureBox3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.trackBar1);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.outputPictureBox);
+            this.Controls.Add(this.threadsNumberLabel);
+            this.Controls.Add(this.threadsNumberTrackBar);
+            this.Controls.Add(this.calculationsCheckBox2);
+            this.Controls.Add(this.calculationsMethodLabel);
+            this.Controls.Add(this.calculationsCheckBox1);
+            this.Controls.Add(this.startMorphingButton);
+            this.Controls.Add(this.inputPictureBox2);
+            this.Controls.Add(this.loadButton2);
+            this.Controls.Add(this.imagePathBox2);
+            this.Controls.Add(this.loadButton1);
+            this.Controls.Add(this.imagePathBox1);
+            this.Controls.Add(this.inputPictureBox1);
             this.Name = "Form1";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.inputPictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.inputPictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.threadsNumberTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.outputPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.lambdaValueTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
+        private void clearPicturesButton_Click(object sender, EventArgs e)
+        {
+            removeOldPictures();
+        }
+
         private void trackBar2_Scroll(object sender, EventArgs e)
         {
-            this.textBox3.Text = System.Convert.ToString(System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
-                / System.Convert.ToDouble(this.trackBar2.Maximum)));
+            this.textBox3.Text = System.Convert.ToString(System.Convert.ToDouble(System.Convert.ToDouble(lambdaValueTrackBar.Value)
+                / System.Convert.ToDouble(this.lambdaValueTrackBar.Maximum)));
 
         }
 
@@ -309,10 +332,10 @@ namespace ImageMorphing
         }
         private void pictureBox1_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
-            if (pictureBox1.Image != null)
+            if (inputPictureBox1.Image != null)
             {
 
-                Bitmap bm = new Bitmap(pictureBox1.Image);
+                Bitmap bm = new Bitmap(inputPictureBox1.Image);
                 if (firstImageCharPoints != null)
                 {
                     foreach (Point point in firstImageCharPoints)
@@ -327,14 +350,14 @@ namespace ImageMorphing
                     }
                 }
 
-                pictureBox1.Image = new Bitmap(bm, new Size(pictureBox1.Width, pictureBox1.Height));
+                inputPictureBox1.Image = new Bitmap(bm, new Size(inputPictureBox1.Width, inputPictureBox1.Height));
             }
         }
         private void pictureBox2_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
-            if (pictureBox2.Image != null)
+            if (inputPictureBox2.Image != null)
             {
-                Bitmap bm = new Bitmap(pictureBox2.Image);
+                Bitmap bm = new Bitmap(inputPictureBox2.Image);
                 if (secondImageCharPoints != null)
                 {
                     foreach (Point point in secondImageCharPoints)
@@ -347,55 +370,58 @@ namespace ImageMorphing
                         }
                     }
                 }
-                pictureBox2.Image = new Bitmap(bm, new Size(pictureBox2.Width, pictureBox2.Height));
+                inputPictureBox2.Image = new Bitmap(bm, new Size(inputPictureBox2.Width, inputPictureBox2.Height));
             }
         }
-        private void button3_Click(object sender, EventArgs e)
+        private void startMorphingButton_Click(object sender, EventArgs e)
         {
             unsafe
             {
-                
-             /*   int resX = 4;
-                int resY = 3;
-                int max = 3;
-                int relDistLen = 3;
-                int[,] relDist = new int[3, 2]{ { 5, 6 }, { 5, 5 }, { 5, 4 } };
-                int oCPLen = 3;
-                int[,] outputCharPoints = new int[3, 2] { { 5, 6 }, { 5, 5 }, { 5, 4 } };
-                int[] asmResult = new int[2] { 3, 3};
-                myMorpher = new Morphing();
-                double resultF = CalcNumeratorFirst(asmResult, resX, resY, max, relDistLen, relDist,outputCharPoints);
-                double resultS = CalcNumeratorSecond(asmResult, resX, resY, max, relDistLen, relDist, outputCharPoints);
-                double[] csResult = myMorpher.calcNumerator(resX, resY, max, relDist, outputCharPoints);
-                 textBox3.Text = System.Convert.ToString(resultF);
-                 textBox4.Text = System.Convert.ToString(resultS);
-                 textBox5.Text = System.Convert.ToString(csResult[0]);
-                 textBox6.Text = System.Convert.ToString(csResult[1]);*/
 
-                myMorpher = new Morphing();
-                createOutputImage();
-            }
-            /*
-            try
-            {
-                if (firstImageCharPoints == null)
-                {
-                    firstImageCharPoints = new List<Point>();
-                }
-                if (secondImageCharPoints == null)
-                {
-                    secondImageCharPoints = new List<Point>();
-                }
+                /*   int resX = 4;
+                   int resY = 3;
+                   int max = 3;
+                   int relDistLen = 3;
+                   int[,] relDist = new int[3, 2]{ { 5, 6 }, { 5, 5 }, { 5, 4 } };
+                   int oCPLen = 3;
+                   int[,] outputCharPoints = new int[3, 2] { { 5, 6 }, { 5, 5 }, { 5, 4 } };
+                   int[] asmResult = new int[2] { 3, 3};
+                   myMorpher = new Morphing();
+                   double resultF = CalcNumeratorFirst(asmResult, resX, resY, max, relDistLen, relDist,outputCharPoints);
+                   double resultS = CalcNumeratorSecond(asmResult, resX, resY, max, relDistLen, relDist, outputCharPoints);
+                   double[] csResult = myMorpher.calcNumerator(resX, resY, max, relDist, outputCharPoints);
+                    textBox3.Text = System.Convert.ToString(resultF);
+                    textBox4.Text = System.Convert.ToString(resultS);
+                    textBox5.Text = System.Convert.ToString(csResult[0]);
+                    textBox6.Text = System.Convert.ToString(csResult[1]);
 
-                double lambda = System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
-                    / System.Convert.ToDouble(this.trackBar2.Maximum));
-                this.myMorpher = new Morphing();
-                createOutputImage();
+                   myMorpher = new Morphing();
+                   createOutputImage();
+               }
+               */
+
+                try
+                {
+                    if (firstImageCharPoints == null)
+                    {
+                        firstImageCharPoints = new List<Point>();
+                    }
+                    if (secondImageCharPoints == null)
+                    {
+                        secondImageCharPoints = new List<Point>();
+                    }
+
+                    double lambda = System.Convert.ToDouble(System.Convert.ToDouble(lambdaValueTrackBar.Value)
+                        / System.Convert.ToDouble(this.lambdaValueTrackBar.Maximum));
+                    this.myMorpher = new Morphing();
+                    createOutputImage();
+                    this.outputPictureBox.Image = outputImage;
+                }
+                catch (DllNotFoundException err)
+                {
+                    textBox5.Text = "Problem!";
+                }
             }
-            catch (DllNotFoundException err)
-            {
-                textBox5.Text = "Problem!";
-            }*/
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -417,48 +443,126 @@ namespace ImageMorphing
             throw new NotImplementedException();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void loadButton1_Click(object sender, EventArgs e)
         {
-            // Sets up an image object to be displayed.
-            if (firstImage != null)
+            try
             {
-                firstImage.Dispose();
+                if (firstImage != null)
+                {
+                    firstImage.Dispose();
+                }
+                inputPictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+                if (imagePathBox1.Text.Length != 0)
+                {
+                    firstImage = new Bitmap(imagePathBox1.Text);
+                }
+                else
+                {
+                    firstImage = new Bitmap(DEFAULT_FIRST_IMAGE_PATH);
+                }
+                if(this.secondImage != null)
+                {
+                    assureImagesSameSize(this.firstImage, this.secondImage);
+                }
+                inputPictureBox1.Image = (Image)firstImage;
             }
-            // Stretches the image to fit the pictureBox.
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            if (textBox1.Text.Length != 0)
+            catch (System.ArgumentException exception)
             {
-                firstImage = new Bitmap(textBox1.Text);
+                NoSuchFilePopup errorPopup = new NoSuchFilePopup();
+                errorPopup.ShowDialog(this);
+                imagePathBox1.Text = "";
             }
-            else
-            {
-                firstImage = new Bitmap("C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Debug/pies.jpg");
-            }
-            pictureBox1.Image = (Image)firstImage;
         }
-        private void button2_Click(object sender, EventArgs e)
+        private void loadButton2_Click(object sender, EventArgs e)
         {
-            // Sets up an image object to be displayed.
-            if (secondImage != null)
+            try
             {
-                secondImage.Dispose();
+                // Sets up an image object to be displayed.
+                if (secondImage != null)
+                {
+                    secondImage.Dispose();
+                }
+                inputPictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
+                if (imagePathBox2.Text.Length != 0)
+                {
+                    secondImage = new Bitmap(imagePathBox2.Text);
+                }
+                else
+                {
+                    secondImage = new Bitmap(DEFAULT_SECOND_IMAGE_PATH);
+                }
+                if (this.firstImage != null)
+                {
+                    assureImagesSameSize(this.firstImage, this.secondImage);
+                }
+                inputPictureBox2.Image = (Image)secondImage;
             }
-            // Stretches the image to fit the pictureBox.
-            pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
-            if (textBox2.Text.Length != 0)
+            catch(System.ArgumentException exception)
             {
-                secondImage = new Bitmap(textBox2.Text);
-                //secondImage.
+                NoSuchFilePopup errorPopup = new NoSuchFilePopup();
+                errorPopup.ShowDialog(this);
+                imagePathBox2.Text = "";
             }
-            else
-            {
-                secondImage = new Bitmap("C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Debug/pies1.jpg");
-            }
-            pictureBox2.Image = (Image)secondImage;
-            // this.morpher.LockUnlockBitsExample(secondImage);
+
+            
         }
 
         #endregion
+
+        private void removeOldPictures()
+        {
+            this.inputPictureBox1.Image = null;
+            this.inputPictureBox2.Image = null;
+            this.outputPictureBox.Image = null;
+            this.imagePathBox1.Text = "";
+            this.imagePathBox2.Text = "";
+        }
+        private void assureImagesSameSize(Bitmap firstImage, Bitmap secondImage)
+        {
+            if(firstImage.Width != secondImage.Width 
+                || firstImage.Height != secondImage.Height)
+            {
+                popupImageSize = new NotSameDimensionsPopup();
+
+                popupImageSize.ShowDialog(this);
+                if (popupImageSize.getConvertFirstToSecond())
+                {
+                    firstImage = ResizeImage(firstImage, secondImage.Width, secondImage.Height);
+                }
+                else if (popupImageSize.getConvertSecondToFirst())
+                {
+                    secondImage = ResizeImage(secondImage, firstImage.Width, firstImage.Height);
+                }
+                else
+                {
+                    this.Close();
+                }
+            }
+        }
+        private Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
         public void getPixelsFromInput()
         {
             Rectangle firstRect = new Rectangle(0, 0, firstImage.Width, firstImage.Height);
@@ -520,8 +624,8 @@ namespace ImageMorphing
             int[] sColorSource = new int[2];
             double[] fPoint = new double[2];
             double[] sPoint = new double[2];
-            double lambda = System.Convert.ToDouble(System.Convert.ToDouble(trackBar2.Value)
-                    / System.Convert.ToDouble(this.trackBar2.Maximum));
+            double lambda = System.Convert.ToDouble(System.Convert.ToDouble(lambdaValueTrackBar.Value)
+                    / System.Convert.ToDouble(this.lambdaValueTrackBar.Maximum));
 
             for (int i = 0; i < firstImageCharPoints.Count; i++)
             {
@@ -538,14 +642,14 @@ namespace ImageMorphing
 
             for (int i = 1; i < outputLen; i++)
             {
-                morphingAlgorithmThreads(i, lambda, oPoints, fRelDist, sRelDist, fColorSource, 
-                    sColorSource, fPoint, sPoint, 2);
+                morphingAlgorithmNormal(i, lambda, oPoints, fRelDist, sRelDist, fColorSource, 
+                    sColorSource, fPoint, sPoint);
             }
 
             //Copy the RGB values back to the bitmap
             //System.Runtime.InteropServices.Marshal.Copy(outputRGB, 0, outputPtr, outputLen);
 
-            outputImage.Save("C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Debug/output.jpg", ImageFormat.Jpeg);
+            outputImage.Save(DEFAULT_OUTPUT_IMAGE_PATH, ImageFormat.Jpeg);
         }
         private void setCharacteristicPoints(int[,] outputCharPoints,
             int[,] firstPoints, int[,] secondPoints, int charPointsNumber, double lambda)
@@ -693,7 +797,6 @@ namespace ImageMorphing
             {
                 for (int i = 1; i < outputImage.Width; i++)
                 {
-
                     determinePointsForObtainingColorASM(i, j, max, outputCharPoints,
             RelDistFirst, RelDistSecond, firstColorSource, secondColorSource, firstPoint, secondPoint);
                     Color myColor = setColorForOutputPixel(firstColorSource, secondColorSource, lambda);
@@ -781,30 +884,32 @@ namespace ImageMorphing
                 return true;
             return false;
         }
-        private PictureBox pictureBox1;
-        private TextBox textBox1;
-        private Button button1;
+        private NotSameDimensionsPopup popupImageSize;
+        private PictureBox inputPictureBox1;
+        private TextBox imagePathBox1;
+        private Button loadButton1;
         private Bitmap firstImage;
         private Bitmap secondImage;
         private Bitmap outputImage;
-        private TextBox textBox2;
-        private Button button2;
-        private PictureBox pictureBox2;
-        private Button button3;
-        private CheckBox checkBox1;
-        private Label label1;
-        private CheckBox checkBox2;
-        private TrackBar trackBar1;
-        private Label label2;
-        private PictureBox pictureBox3;
+        private TextBox imagePathBox2;
+        private Button loadButton2;
+        private PictureBox inputPictureBox2;
+        private Button startMorphingButton;
+        private CheckBox calculationsCheckBox1;
+        private Label calculationsMethodLabel;
+        private CheckBox calculationsCheckBox2;
+        private TrackBar threadsNumberTrackBar;
+        private Label threadsNumberLabel;
+        private PictureBox outputPictureBox;
         private TextBox textBox3;
         private TextBox textBox4;
         private TextBox textBox5;
         private List<Point> firstImageCharPoints;
         private List<Point> secondImageCharPoints;
-        private TrackBar trackBar2;
-        private Label label3;
+        private TrackBar lambdaValueTrackBar;
+        private Label lambdaValueLabel;
         private TextBox textBox6;
+        private Button clearPicturesButton;
     }
 }
 

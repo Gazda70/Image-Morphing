@@ -82,10 +82,28 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="NoSuchFilePopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NoSuchFilePopup.Designer.cs">
+      <DependentUpon>NoSuchFilePopup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NotSameDimensionsPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NotSameDimensionsPopup.Designer.cs">
+      <DependentUpon>NotSameDimensionsPopup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NoSuchFilePopup.resx">
+      <DependentUpon>NoSuchFilePopup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NotSameDimensionsPopup.resx">
+      <DependentUpon>NotSameDimensionsPopup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
