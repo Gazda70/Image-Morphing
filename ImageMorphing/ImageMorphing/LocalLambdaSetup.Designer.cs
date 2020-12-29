@@ -34,13 +34,14 @@ namespace ImageMorphing
             this.localLambdaInfoLabel = new System.Windows.Forms.Label();
             this.localLambdaValueTrackBar = new System.Windows.Forms.TrackBar();
             this.localLambdaValueLabel = new System.Windows.Forms.Label();
+            this.applyAndExitButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.localLambdaValueTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // localLambdaInfoLabel
             // 
             this.localLambdaInfoLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.localLambdaInfoLabel.Location = new System.Drawing.Point(49, 125);
+            this.localLambdaInfoLabel.Location = new System.Drawing.Point(51, 54);
             this.localLambdaInfoLabel.Name = "localLambdaInfoLabel";
             this.localLambdaInfoLabel.Size = new System.Drawing.Size(702, 55);
             this.localLambdaInfoLabel.TabIndex = 0;
@@ -48,7 +49,7 @@ namespace ImageMorphing
             // 
             // localLambdaValueTrackBar
             // 
-            this.localLambdaValueTrackBar.Location = new System.Drawing.Point(239, 218);
+            this.localLambdaValueTrackBar.Location = new System.Drawing.Point(248, 133);
             this.localLambdaValueTrackBar.Name = "localLambdaValueTrackBar";
             this.localLambdaValueTrackBar.Size = new System.Drawing.Size(288, 56);
             this.localLambdaValueTrackBar.TabIndex = 1;
@@ -56,16 +57,30 @@ namespace ImageMorphing
             // 
             // localLambdaValueLabel
             // 
-            this.localLambdaValueLabel.Location = new System.Drawing.Point(239, 309);
+            this.localLambdaValueLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.localLambdaValueLabel.Location = new System.Drawing.Point(248, 192);
             this.localLambdaValueLabel.Name = "localLambdaValueLabel";
             this.localLambdaValueLabel.Size = new System.Drawing.Size(288, 77);
             this.localLambdaValueLabel.TabIndex = 2;
+            this.localLambdaValueLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // applyAndExitButton
+            // 
+            this.applyAndExitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.applyAndExitButton.Location = new System.Drawing.Point(257, 316);
+            this.applyAndExitButton.Name = "applyAndExitButton";
+            this.applyAndExitButton.Size = new System.Drawing.Size(279, 64);
+            this.applyAndExitButton.TabIndex = 3;
+            this.applyAndExitButton.Text = "OK";
+            this.applyAndExitButton.UseVisualStyleBackColor = true;
+            this.applyAndExitButton.Click += new System.EventHandler(this.applyAndExitButton_Click);
             // 
             // LocalLambdaSetup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.applyAndExitButton);
             this.Controls.Add(this.localLambdaValueLabel);
             this.Controls.Add(this.localLambdaValueTrackBar);
             this.Controls.Add(this.localLambdaInfoLabel);
@@ -77,14 +92,21 @@ namespace ImageMorphing
 
         }
 
+        private void applyAndExitButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         #endregion
 
         private void localLambdaValueTrackBar_Scroll(object sender, EventArgs e)
         {
-            parentForm.addNewLocalLambda(System.Convert.ToDouble(System.Convert.ToDouble(localLambdaValueTrackBar.Value)
-                        / System.Convert.ToDouble(this.localLambdaValueTrackBar.Maximum)));
+            double myLambda = System.Convert.ToDouble(System.Convert.ToDouble(localLambdaValueTrackBar.Value)
+                        / System.Convert.ToDouble(this.localLambdaValueTrackBar.Maximum));
+            parentForm.addNewLocalLambda(myLambda);
+            this.localLambdaValueLabel.Text = System.Convert.ToString(myLambda);
         }
-        public void setLocalLambda(Form1 newParentForm)
+        public void setParentForm(Form1 newParentForm)
         {
             this.parentForm = newParentForm;
         }
@@ -93,5 +115,6 @@ namespace ImageMorphing
         private System.Windows.Forms.Label localLambdaInfoLabel;
         private System.Windows.Forms.TrackBar localLambdaValueTrackBar;
         private System.Windows.Forms.Label localLambdaValueLabel;
+        private System.Windows.Forms.Button applyAndExitButton;
     }
 }

@@ -70,7 +70,7 @@ namespace ImageMorphing
             this.threadsNumberLabel = new System.Windows.Forms.Label();
             this.outputPictureBox = new System.Windows.Forms.PictureBox();
             this.clearPicturesButton = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.localLambdaButton = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.globalLambdaValueTrackBar = new System.Windows.Forms.TrackBar();
@@ -183,14 +183,15 @@ namespace ImageMorphing
             this.clearPicturesButton.UseVisualStyleBackColor = true;
             this.clearPicturesButton.Click += new System.EventHandler(this.clearPicturesButton_Click);
             // 
-            // button2
+            // localLambdaButton
             // 
-            this.button2.Location = new System.Drawing.Point(389, 603);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(296, 50);
-            this.button2.TabIndex = 22;
-            this.button2.Text = "Local Lambda";
-            this.button2.UseVisualStyleBackColor = true;
+            this.localLambdaButton.Location = new System.Drawing.Point(389, 603);
+            this.localLambdaButton.Name = "localLambdaButton";
+            this.localLambdaButton.Size = new System.Drawing.Size(296, 50);
+            this.localLambdaButton.TabIndex = 22;
+            this.localLambdaButton.Text = "Local Lambda";
+            this.localLambdaButton.UseVisualStyleBackColor = true;
+            this.localLambdaButton.Click += new System.EventHandler(this.localLambdaButton_Click);
             // 
             // button3
             // 
@@ -236,7 +237,7 @@ namespace ImageMorphing
             this.Controls.Add(this.globalLambdaValueTrackBar);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.localLambdaButton);
             this.Controls.Add(this.clearPicturesButton);
             this.Controls.Add(this.outputPictureBox);
             this.Controls.Add(this.threadsNumberLabel);
@@ -260,6 +261,18 @@ namespace ImageMorphing
 
         }
 
+        private void localLambdaButton_Click(object sender, EventArgs e)
+        {
+            if(pointsPuttingFlag == pointsPuttingMode.standardPoints)
+            {
+                pointsPuttingFlag = pointsPuttingMode.localLambdaPoints;
+            }
+            else
+            {
+                pointsPuttingFlag = pointsPuttingMode.standardPoints;
+            }
+        }
+
         private void globalLambdaValueTrackBar_Scroll(object sender, EventArgs e)
         {
             globalLambda = System.Convert.ToDouble(System.Convert.ToDouble(globalLambda)
@@ -275,20 +288,33 @@ namespace ImageMorphing
 
         private void pictureBox1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (firstImageCharPoints == null)
+            if (pointsPuttingFlag == pointsPuttingMode.standardPoints)
             {
-                firstImageCharPoints = new List<Point>();
+                if (firstImageCharPoints == null)
+                {
+                    firstImageCharPoints = new List<Point>();
+                }
+                firstImageCharPoints.Add(new Point(e.Location.X, e.Location.Y));
+            }else if(pointsPuttingFlag == pointsPuttingMode.localLambdaPoints)
+            {
+                setNewLocalLambda(e.Location.X, e.Location.Y);
             }
-            firstImageCharPoints.Add(new Point(e.Location.X, e.Location.Y));
             Invalidate();
         }
         private void pictureBox2_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (secondImageCharPoints == null)
+            if (pointsPuttingFlag == pointsPuttingMode.standardPoints)
+            {
+                if (secondImageCharPoints == null)
             {
                 secondImageCharPoints = new List<Point>();
             }
             secondImageCharPoints.Add(new Point(e.Location.X, e.Location.Y));
+            }
+            else if (pointsPuttingFlag == pointsPuttingMode.localLambdaPoints)
+            {
+                setNewLocalLambda(e.Location.X, e.Location.Y);
+            }
             Invalidate();
         }
         private void pictureBox1_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
@@ -297,18 +323,23 @@ namespace ImageMorphing
             {
 
                 Bitmap bm = new Bitmap(inputPictureBox1.Image);
+                Graphics gr = Graphics.FromImage(bm);
                 if (firstImageCharPoints != null)
                 {
                     foreach (Point point in firstImageCharPoints)
                     {
-
-                        using (Graphics gr = Graphics.FromImage(bm))
-                        {
-                            gr.DrawEllipse(Pens.Blue,
-                                    new Rectangle(point.X, point.Y, 4, 4)
-                                );
-                        }
+                        gr.DrawEllipse(Pens.Red,
+                        new Rectangle(point.X, point.Y, 4, 4)
+                            );
+                        /*            using (Graphics gr = Graphics.FromImage(bm))
+                                    {
+                                        gr.DrawEllipse(Pens.Red,
+                                                new Rectangle(point.X, point.Y, 4, 4)
+                                            );
+                                    }
+                                }*/
                     }
+                    paintLocalLambdaPoints(gr);
                 }
 
                 inputPictureBox1.Image = new Bitmap(bm, new Size(inputPictureBox1.Width, inputPictureBox1.Height));
@@ -319,19 +350,37 @@ namespace ImageMorphing
             if (inputPictureBox2.Image != null)
             {
                 Bitmap bm = new Bitmap(inputPictureBox2.Image);
+                    Graphics gr = Graphics.FromImage(bm);
                 if (secondImageCharPoints != null)
                 {
                     foreach (Point point in secondImageCharPoints)
                     {
-                        using (Graphics gr = Graphics.FromImage(bm))
-                        {
-                            gr.DrawEllipse(Pens.Blue,
+                        gr.DrawEllipse(Pens.Red,
                                     new Rectangle(point.X, point.Y, 4, 4)
                                 );
-                        }
+                        /*               using (Graphics gr = Graphics.FromImage(bm))
+                                       {
+                                           gr.DrawEllipse(Pens.Red,
+                                                   new Rectangle(point.X, point.Y, 4, 4)
+                                               );
+                                       }*/
+
                     }
+                    paintLocalLambdaPoints(gr);
                 }
                 inputPictureBox2.Image = new Bitmap(bm, new Size(inputPictureBox2.Width, inputPictureBox2.Height));
+            }
+        }
+
+        private void paintLocalLambdaPoints(Graphics graphics)
+        {
+            if (localLambda != null)
+            {
+                foreach (Tuple<int, int, double> lambdaPoint in localLambda)
+                {
+                    graphics.DrawEllipse(Pens.Blue,
+                    new Rectangle(lambdaPoint.Item1, lambdaPoint.Item2, 4, 4));
+                }
             }
         }
         private void startMorphingButton_Click(object sender, EventArgs e)
@@ -476,6 +525,18 @@ namespace ImageMorphing
             this.outputPictureBox.Image = null;
             this.imagePathBox1.Text = "";
             this.imagePathBox2.Text = "";
+        }
+
+        private void setNewLocalLambda(int posX, int posY)
+        {
+            if (localLambda == null)
+            {
+                localLambda = new List<Tuple<int, int, double>>();
+            }
+            LocalLambdaSetup localLambdaSetup = new LocalLambdaSetup();
+            localLambdaSetup.setParentForm(this);
+            localLambdaSetup.ShowDialog(this);
+            localLambda.Add(new Tuple<int, int, double>(posX, posY, temporaryLambda));
         }
         private void assureImagesSameSize(Bitmap firstImage, Bitmap secondImage)
         {
@@ -825,7 +886,8 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
             temporaryLambda = newLambda;
         }
 
-
+        private enum pointsPuttingMode { standardPoints, localLambdaPoints};
+        private pointsPuttingMode pointsPuttingFlag = pointsPuttingMode.standardPoints;
         private bool lambdaFlag;
         private double temporaryLambda;
         private List<Tuple<int, int, double>> localLambda;
@@ -847,7 +909,7 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         private List<Point> firstImageCharPoints;
         private List<Point> secondImageCharPoints;
         private Button clearPicturesButton;
-        private Button button2;
+        private Button localLambdaButton;
         private Button button3;
         private Button button4;
         private TrackBar globalLambdaValueTrackBar;
