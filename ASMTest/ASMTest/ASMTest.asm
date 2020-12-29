@@ -43,11 +43,12 @@ MOV RAX, 0
 ; pêtla przechodz¹ca przez tablicê punktów charakterystycznych
 charPointsLoop:
 
+; inkrementacja indeksu
+MOV RAX, 8
+MUL R10
 ; wyznaczenie ró¿nicy wspó³rzêdnych aktualnego punktu charakterystycznego
 ; oraz wspó³rzêdnych aktualnego piksela
 MOV RBX, QWORD PTR[RSP + 8 * 7]
-MOV RAX, 8
-MUL R10
 ADD RBX, RAX
 MOV R12, [RBX]
 MOV R11, [RBX + 4]
@@ -73,6 +74,7 @@ MOVSD XMM2, help
 CVTDQ2PD XMM1, XMM2
 
 ; obliczenie odwrotnoœci aktalnego mianownika i dodanie jej zbiorczego mianownika
+;!dzia³anie MOVSD: [RDI]<-[RSI]
 MOVSD XMM0, one
 DIVSD XMM0, XMM1
 

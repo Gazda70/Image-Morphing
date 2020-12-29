@@ -39,5 +39,10 @@ namespace ImageMorphing
         {
 
         }
+
+        private void threadsNumberLabel_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
