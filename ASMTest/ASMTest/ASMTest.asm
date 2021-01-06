@@ -92,6 +92,7 @@ MOV R11, [RBX]
 MOV help, R11
 MOVD XMM0, help
 CVTDQ2PD XMM4, XMM0
+//b³¹d dostêpu
 MOV R11, [RBX + 4]
 MOV help, R11
 MOVD XMM0, help
@@ -128,7 +129,7 @@ DIVSD XMM7, XMM3
 
 
 ; zapis do tablicy wynikowej
-MOVSD XMM0, XMM6
+MOV RCX, retArray
 
 
 RET
