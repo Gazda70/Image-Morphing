@@ -22,10 +22,14 @@ namespace ImageMorphing
                "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/pies.jpg";
            const string DEFAULT_SECOND_IMAGE_PATH =
                "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/pies1.jpg";
-    /*    const string DEFAULT_FIRST_IMAGE_PATH =
-               "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/Test_Bitmap_3x2_First.png";
-        const string DEFAULT_SECOND_IMAGE_PATH =
-            "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/Test_Bitmap_3x2_Second.png";*/
+   /*         const string DEFAULT_FIRST_IMAGE_PATH =
+                   "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/Test_Bitmap_3x2_First.png";
+            const string DEFAULT_SECOND_IMAGE_PATH =
+                "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/Test_Bitmap_3x2_Second.png";*/
+        /*  const string DEFAULT_FIRST_IMAGE_PATH =
+                 "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/quarterRed.bmp";
+          const string DEFAULT_SECOND_IMAGE_PATH =
+              "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/quarterRed.bmp";*/
         const string DEFAULT_OUTPUT_IMAGE_PATH =
             "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/output.jpg";
 
@@ -81,6 +85,8 @@ namespace ImageMorphing
             this.assemblyExecutionButton = new System.Windows.Forms.Button();
             this.globalLambdaValueTrackBar = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
+            this.threadsNumberInfoLabel = new System.Windows.Forms.Label();
+            this.threadsNumberInfoBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.inputPictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.inputPictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.threadsNumberTrackBar)).BeginInit();
@@ -93,9 +99,9 @@ namespace ImageMorphing
             this.inputPictureBox1.Location = new System.Drawing.Point(37, 12);
             this.inputPictureBox1.Name = "inputPictureBox1";
             this.inputPictureBox1.Size = new System.Drawing.Size(427, 403);
+            this.inputPictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.inputPictureBox1.TabIndex = 0;
             this.inputPictureBox1.TabStop = false;
-            this.inputPictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             this.inputPictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             this.inputPictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
             // 
@@ -139,9 +145,9 @@ namespace ImageMorphing
             this.inputPictureBox2.Location = new System.Drawing.Point(552, 12);
             this.inputPictureBox2.Name = "inputPictureBox2";
             this.inputPictureBox2.Size = new System.Drawing.Size(427, 403);
+            this.inputPictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.inputPictureBox2.TabIndex = 5;
             this.inputPictureBox2.TabStop = false;
-            this.inputPictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
             this.inputPictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
             this.inputPictureBox2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseDown);
             // 
@@ -178,9 +184,9 @@ namespace ImageMorphing
             this.outputPictureBox.Location = new System.Drawing.Point(1070, 12);
             this.outputPictureBox.Name = "outputPictureBox";
             this.outputPictureBox.Size = new System.Drawing.Size(427, 403);
+            this.outputPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.outputPictureBox.TabIndex = 12;
             this.outputPictureBox.TabStop = false;
-            this.outputPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             // 
             // clearPicturesButton
             // 
@@ -239,11 +245,30 @@ namespace ImageMorphing
             this.label1.TabIndex = 26;
             this.label1.Text = "Global lambda";
             // 
+            // threadsNumberInfoLabel
+            // 
+            this.threadsNumberInfoLabel.AutoSize = true;
+            this.threadsNumberInfoLabel.Location = new System.Drawing.Point(1119, 660);
+            this.threadsNumberInfoLabel.Name = "threadsNumberInfoLabel";
+            this.threadsNumberInfoLabel.Size = new System.Drawing.Size(130, 17);
+            this.threadsNumberInfoLabel.TabIndex = 27;
+            this.threadsNumberInfoLabel.Text = "Number of threads:";
+            this.threadsNumberInfoLabel.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // threadsNumberInfoBox
+            // 
+            this.threadsNumberInfoBox.Location = new System.Drawing.Point(1256, 660);
+            this.threadsNumberInfoBox.Name = "threadsNumberInfoBox";
+            this.threadsNumberInfoBox.Size = new System.Drawing.Size(100, 22);
+            this.threadsNumberInfoBox.TabIndex = 28;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1617, 754);
+            this.Controls.Add(this.threadsNumberInfoBox);
+            this.Controls.Add(this.threadsNumberInfoLabel);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.globalLambdaValueTrackBar);
             this.Controls.Add(this.assemblyExecutionButton);
@@ -440,6 +465,7 @@ namespace ImageMorphing
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             this.threadsNumber = this.threadsNumberTrackBar.Value;
+            this.threadsNumberInfoBox.Text = Convert.ToString(this.threadsNumber);
         }
 
         private void loadButton1_Click(object sender, EventArgs e)
@@ -459,9 +485,9 @@ namespace ImageMorphing
                 {
                     firstImage = new Bitmap(DEFAULT_FIRST_IMAGE_PATH);
                 }
-                if(this.secondImage != null)
+                if(Form1.secondImage != null)
                 {
-                    assureImagesSameSize(this.firstImage, this.secondImage);
+                    assureImagesSameSize(Form1.firstImage, Form1.secondImage);
                 }
                 inputPictureBox1.Image = (Image)firstImage;
             }
@@ -490,9 +516,9 @@ namespace ImageMorphing
                 {
                     secondImage = new Bitmap(DEFAULT_SECOND_IMAGE_PATH);
                 }
-                if (this.firstImage != null)
+                if (Form1.firstImage != null)
                 {
-                    assureImagesSameSize(this.firstImage, this.secondImage);
+                    assureImagesSameSize(Form1.firstImage, Form1.secondImage);
                 }
                 inputPictureBox2.Image = (Image)secondImage;
             }
@@ -533,6 +559,13 @@ namespace ImageMorphing
             this.inputPictureBox1.Image = null;
             this.inputPictureBox2.Image = null;
             this.outputPictureBox.Image = null;
+            if (localLambda != null)
+            {
+                this.localLambda.Clear();
+            }
+            this.pointsPuttingFlag = pointsPuttingMode.standardPoints;
+            this.firstImageCharPoints.Clear();
+            this.secondImageCharPoints.Clear();
             this.imagePathBox1.Text = "";
             this.imagePathBox2.Text = "";
         }
@@ -691,69 +724,56 @@ namespace ImageMorphing
             int[] sColorSource = new int[2];
             double[] fPoint = new double[2];
             double[] sPoint = new double[2];
-            if (modeOfExecutionFlag == modeOfExecution.csharp)
-            {
-  /*              if (lambdaFlag)
-                {
-                    for (int i = 0; i < outputLen; i++)
-                    {
-                        morphingAlgorithmCsharpLocalLambda(outputLen, outputImage.Width, outputImage.Height, outputImage.Width, 
-                            oPoints, fRelDist, sRelDist, fColorSource, sColorSource, fPoint, sPoint);
-                    }
-
-                }
-                else
-                {*/
-                //UWAGA ZASIĘG PĘTLI ZMIENIONY DLA TESTÓW
-                    for (int i = 1; i < 2; i++)//outputLen + 1; i++)
+                   for (int i = 1; i < outputLen + 1; i++)
                 {
                     List<List<int[,,]>> myThreadDataList;
                     myThreadDataList = new List<List<int[,,]>>();
                     threadsCreator(i, myThreadDataList);
-                    foreach (Thread thread in threads)
+                   foreach (Task thread in threads)
                     {
                         thread.Start();
                     }
 
-                    foreach (Thread thread in threads)
+                    Task.WaitAll(threads);
+                    if (lambdaFlag)
                     {
-                        thread.Join();
-                    }
-
-                    foreach (List<int[,,]> myList in myThreadDataList)
-                    {
-                        int borderHeight = myList[2][0, 0, 1] - myList[2][0, 0, 0];
-                        for (int j = 0; j < borderHeight; j++)
+                        foreach (List<int[,,]> myList in myThreadDataList)
                         {
-                            for (int k = 0; k < outputImage.Width; k++)
+                            int borderHeight = myList[2][0, 0, 1] - myList[2][0, 0, 0];
+                            for (int j = 0; j < borderHeight; j++)
                             {
-                                setColorForOutputPixel(myList[0][i,j, 0], myList[0][i,j, 1], myList[1][i,j, 0], myList[1][i,j, 1],
-                            k, j, globalLambda, firstImageRGB, secondImageRGB, outputImageRGB,
-                            outputImage.Width, outputImage.Height);
+                                for (int k = 0; k < outputImage.Width; k++)
+                                {
+                                    setColorForOutputPixel(myList[0][k, j, 0], myList[0][k, j, 1], myList[1][k, j, 0], myList[1][k, j, 1],
+                                k, j + myList[2][0, 0, 0], findNearestLocalLambda(j,myList[2][0, 0, 0]), firstImageRGB, secondImageRGB, outputImageRGB,
+                                outputImage.Width, outputImage.Height);
+                                }
                             }
                         }
                     }
-                }
-       //         }
+                    else
+                    {
+                        foreach (List<int[,,]> myList in myThreadDataList)
+                        {
+                            int borderHeight = myList[2][0, 0, 1] - myList[2][0, 0, 0];
+                            for (int j = 0; j < borderHeight; j++)
+                            {
+                                for (int k = 0; k < outputImage.Width; k++)
+                                {
+                                    setColorForOutputPixel(myList[0][k, j, 0], myList[0][k, j, 1], myList[1][k, j, 0], myList[1][k, j, 1],
+                                k, j + myList[2][0, 0, 0], globalLambda, firstImageRGB, secondImageRGB, outputImageRGB,
+                                outputImage.Width, outputImage.Height);
+                                }
+                            }
+                        }
+                    }
             }
-         /*   else if (modeOfExecutionFlag == modeOfExecution.assembly)
-            {
-                if (lambdaFlag)
-                {
-                    morphingAlgorithmASMLocalLambda(outputLen, outputImage.Width, outputImage.Height, outputImage.Width, oPoints, fRelDist, sRelDist, fColorSource,
-                        sColorSource, fPoint, sPoint);
-                }
-                else
-                {
-                    morphingAlgorithmASMGlobalLambda(outputLen, outputImage.Width, outputImage.Height, outputImage.Width,
-                        oPoints, fRelDist, sRelDist, fColorSource, sColorSource, fPoint, sPoint);
-                }
-            }*/
+
         }
         private void threadsCreator(int maxOutCharPtsLen, List<List<int[,,]>> myThreadDataList)
         {
             if (threadsNumber == 0) threadsNumber = 1;
-            threads = new Thread[threadsNumber];
+            threads = new Task[threadsNumber];
             int startH;
             int finishH;
             //int tableSize = outputImage.Height * outputImage.Width;
@@ -780,29 +800,33 @@ namespace ImageMorphing
                    firstColorSource, secondColorSource, new int[,,]{ { { startH, finishH }, {0,0 } } }
                     });
                 // WIDTH -> HEIGHT
-                Thread t = createNewThread(maxOutCharPtsLen, startH, finishH, outputImage.Width,
+                Task t = createNewThread(maxOutCharPtsLen, startH, finishH, outputImage.Width,
                     myThreadDataList[k][0], myThreadDataList[k][1]);
                 threads[k] = t;
             }
 
 
         }
-        private Thread createNewThread(int maxCharPts, int startH, int finishH, int finishW,
+        private Task createNewThread(int maxCharPts, int startH, int finishH, int finishW,
             int[,,] firstColorSource, int[,,] secondColorSource)
         {
-            Thread toReturn = null;
+            Task toReturn = null;
             int[] fColorSource = new int[2];
             int[] sColorSource = new int[2];
             double[] fPoint = new double[2];
             double[] sPoint = new double[2];
             if (modeOfExecutionFlag == modeOfExecution.csharp)
             {
-                toReturn = new Thread(new ThreadStart(() =>
-                                    morphingAlgorithmCsharpGlobalLambda(maxCharPts, startH, finishH, finishW,
-                        oPoints, fRelDist, sRelDist, fPoint, sPoint, firstColorSource, secondColorSource)));
+                    toReturn = new Task(() =>
+                    morphingAlgorithmCsharp(maxCharPts, startH, finishH, finishW,
+                    oPoints, fRelDist, sRelDist, fPoint, sPoint, firstColorSource, secondColorSource));
             }
             else if (modeOfExecutionFlag == modeOfExecution.assembly)
             {
+
+                    toReturn = new Task(() =>
+                    morphingAlgorithmASM(maxCharPts, startH, finishH, finishW,
+                        oPoints, fRelDist, sRelDist, firstColorSource, secondColorSource, fPoint, sPoint));
 
             }
             return toReturn; 
@@ -868,7 +892,7 @@ namespace ImageMorphing
 
         }
 
-        public void determinePointsForObtainingColorCsharp(int resX, int resY, int max, int[,] outputCharPoints, int maxWidth, int maxHeight,
+        public void determinePointsForObtainingColorCsharp(int resX, int resY, int max, int[,] outputCharPoints, int idX, int idY,
 int[,] RelDistFirst, int[,] RelDistSecond, int[,,] firstColorSource, int[,,] secondColorSource, 
 double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         {
@@ -880,10 +904,10 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
             || Double.IsNaN(secondPoint[0]) || Double.IsNaN(secondPoint[1])))
             {
                 //ZŁE INDEKSOWANIE !!
-                     firstColorSource[resX, resY%maxHeight, 0] = System.Convert.ToInt32(firstPoint[0]) + resX;
-                     firstColorSource[resX, resY % maxHeight, 1] = System.Convert.ToInt32(firstPoint[1]) + resY;
-                     secondColorSource[resX, resY % maxHeight, 0] = System.Convert.ToInt32(secondPoint[0]) + resX;
-                     secondColorSource[resX, resY % maxHeight, 1] = System.Convert.ToInt32(secondPoint[1]) + resY;
+                     firstColorSource[idX, idY, 0] = System.Convert.ToInt32(firstPoint[0]) + resX;
+                     firstColorSource[idX, idY, 1] = System.Convert.ToInt32(firstPoint[1]) + resY;
+                     secondColorSource[idX, idY, 0] = System.Convert.ToInt32(secondPoint[0]) + resX;
+                     secondColorSource[idX, idY, 1] = System.Convert.ToInt32(secondPoint[1]) + resY;
 
       /*          firstColorSource[resY + maxWidth*resX,0] = System.Convert.ToInt32(firstPoint[0]) + resX;
      firstColorSource[resY + maxWidth * resX, 1] = System.Convert.ToInt32(firstPoint[1]) + resY;
@@ -896,7 +920,7 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
             }
         }
 
-        private void morphingAlgorithmCsharpLocalLambda(int maxCharPts,int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
+  /*      private void morphingAlgorithmCsharpLocalLambda(int maxCharPts,int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
         int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint,
         double[] secondPoint)
         {
@@ -907,16 +931,14 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
                 {
      /*               determinePointsForObtainingColorCsharp(i, j, maxCharPts, outputCharPoints,
             RelDistFirst, RelDistSecond, firstColorSource, secondColorSource, firstPoint, secondPoint, myMorphing);*/
-                    lock (_locker)
-                    {
                  /*       setColorForOutputPixel(firstColorSource, secondColorSource, i, j, findNearestLocalLambda(i, j),
                             firstImageRGB, secondImageRGB, outputImageRGB, outputImage.Width, outputImage.Height);*/
-                    }
+     /*               }
                 }
             }
-        }
+        }*/
 
-        private void morphingAlgorithmASMLocalLambda(int maxCharPts, int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
+   /*     private void morphingAlgorithmASMLocalLambda(int maxCharPts, int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
    int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint,
    double[] secondPoint)
         {
@@ -930,55 +952,76 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
                     {
               /*          setColorForOutputPixel(firstColorSource, secondColorSource, i, j, findNearestLocalLambda(i, j),
                             firstImageRGB, secondImageRGB, outputImageRGB, outputImage.Width, outputImage.Height);*/
-                    }
+    /*                }
                 }
             }
-        }
+        }*/
 
-        private void morphingAlgorithmCsharpGlobalLambda(int maxCharPts, int startPos, int maxPos, int maxWidth,
+        private void morphingAlgorithmCsharp(int maxCharPts, int startHeight, int maxHeight, int maxWidth,
             int[,] outputCharPoints,
                         int[,] RelDistFirst, int[,] RelDistSecond, double[] firstPoint,
                             double[] secondPoint, int[,,] firstColorSource, int[,,] secondColorSource)
         {
-            int startHeight = startPos;
-            int maxHeight = maxPos;
             int borderHeight = maxHeight - startHeight;
             Morphing myMorphing = new Morphing();
                   for (int j = startHeight; j < maxHeight; j++)
                    {
                 for (int i = 0; i < maxWidth; i++)
                 {
-                    firstColorSource[i, j% borderHeight, 0] = i;
-                    firstColorSource[i, j % borderHeight, 1] = j;
 
-                    secondColorSource[i, j % borderHeight, 0] = i;
-                    secondColorSource[i, j % borderHeight, 1] = j;
+                    firstPoint = myMorphing.calcPoint(i, j, maxCharPts, RelDistFirst, outputCharPoints);
+                    secondPoint = myMorphing.calcPoint(i, j, maxCharPts, RelDistSecond, outputCharPoints);
 
-                    //PROBLEM
-                    /*    determinePointsForObtainingColorCsharp(i, j,
-                            maxCharPts, outputCharPoints, maxWidth - 1, borderHeight,
-                            RelDistFirst, RelDistSecond, firstColorSource, secondColorSource,
-                            firstPoint, secondPoint, myMorphing);*/
+                    if (!(Double.IsNaN(firstPoint[0]) || Double.IsNaN(firstPoint[1])
+                    || Double.IsNaN(secondPoint[0]) || Double.IsNaN(secondPoint[1])))
+                    {
+                        firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(firstPoint[0]) + i;
+                        firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(firstPoint[1]) + j;
+                        secondColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(secondPoint[0]) + i;
+                        secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(secondPoint[1]) + j;
+                    }
+                    /* firstColorSource[i, j% borderHeight, 0] = i;
+                     firstColorSource[i, j % borderHeight, 1] = j;
+
+                     secondColorSource[i, j % borderHeight, 0] = i;
+                     secondColorSource[i, j % borderHeight, 1] = j;*/
+
+                    /* determinePointsForObtainingColorCsharp(i, j,
+                             maxCharPts, outputCharPoints, i, j % borderHeight,
+                             RelDistFirst, RelDistSecond, firstColorSource, secondColorSource,
+                             firstPoint, secondPoint, myMorphing);*/
                 }
             }
             
          //   }
         }
 
-        private void morphingAlgorithmASMGlobalLambda(int maxCharPts, int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
-   int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint,
+        private void morphingAlgorithmASM(int maxCharPts, int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
+   int[,] RelDistFirst, int[,] RelDistSecond, int[,,] firstColorSource, int[,,] secondColorSource, double[] firstPoint,
    double[] secondPoint)
         {
+            int borderHeight = maxHeight - startHeight;
             for (int j = startHeight; j < maxHeight; j++)
             {
                 for (int i = 0; i < maxWidth; i++)
                 {
-                    determinePointsForObtainingColorASM(i, j, maxCharPts, outputCharPoints,
-            RelDistFirst, RelDistSecond, firstColorSource, secondColorSource, firstPoint, secondPoint);
-                    lock (_locker)
+                    double fPoint = CalcNumeratorFirst(firstPoint, i, j, maxCharPts, RelDistFirst.Length, RelDistFirst, outputCharPoints);
+                    double sPoint = CalcNumeratorSecond(firstPoint, i, j, maxCharPts, RelDistFirst.Length, RelDistFirst, outputCharPoints);
+                    double fSPoint = CalcNumeratorFirst(secondPoint, i, j, maxCharPts, RelDistSecond.Length, RelDistSecond, outputCharPoints);
+                    double sSPoint = CalcNumeratorSecond(secondPoint, i, j, maxCharPts, RelDistSecond.Length, RelDistSecond, outputCharPoints);
+
+                    if (!(Double.IsNaN(fPoint) || Double.IsNaN(sPoint)
+                        || Double.IsNaN(fSPoint) || Double.IsNaN(sSPoint)))
                     {
-                     /*   setColorForOutputPixel(firstColorSource, secondColorSource, i, j, globalLambda, 
-                            firstImageRGB, secondImageRGB, outputImageRGB, outputImage.Width, outputImage.Height);*/
+
+                            firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(fPoint) + i;
+                            firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(sPoint) + j;
+                            secondColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(fSPoint) + i;
+                            secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(sSPoint) + j;
+                    }
+                    else
+                    {
+                        return;
                     }
                 }
             }
@@ -1096,7 +1139,7 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         static readonly object _locker = new object();
         static readonly object _innerLocker = new object();
         Semaphore semaphoreObject = new Semaphore(initialCount: 1, maximumCount: 1, name:"SetOutputBitmapColor");
-        Thread[] threads;
+        Task[] threads;
         int outputLen;
         int[,] oPoints;
         int[,] fRelDist;
@@ -1118,9 +1161,9 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         private PictureBox inputPictureBox1;
         private TextBox imagePathBox1;
         private Button loadButton1;
-        private Bitmap firstImage;
-        private Bitmap secondImage;
-        private Bitmap outputImage;
+        public static Bitmap firstImage;
+        public static Bitmap secondImage;
+        public static Bitmap outputImage;
         private TextBox imagePathBox2;
         private Button loadButton2;
         private PictureBox inputPictureBox2;
@@ -1136,6 +1179,8 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         private Button assemblyExecutionButton;
         private TrackBar globalLambdaValueTrackBar;
         private Label label1;
+        private Label threadsNumberInfoLabel;
+        private TextBox threadsNumberInfoBox;
     }
 }
 
