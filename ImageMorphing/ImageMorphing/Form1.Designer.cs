@@ -17,7 +17,7 @@ namespace ImageMorphing
     {
         //ZMIENIĆ NA RELEASE
         const string ASM_DLL_Path = 
-            "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ASMTest/x64/Debug/ASMTest.dll";
+            "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ASMTest/x64/Release/ASMTest.dll";
            const string DEFAULT_FIRST_IMAGE_PATH =
                "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/pies.jpg";
            const string DEFAULT_SECOND_IMAGE_PATH =
@@ -34,12 +34,14 @@ namespace ImageMorphing
             "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/output.jpg";
 
         [DllImport(@ASM_DLL_Path)]
-        static unsafe extern double CalcNumeratorFirst(double[] result, int resX, int resY, int max, int relDistLen,
-            int[,] relDist, int[,] outputCharPoints);
+        //static unsafe extern double CalcNumeratorFirst(int[] result);
+        static unsafe extern double CalcNumerator(int[] result, int[] relDist, int[] outputCharPoints, 
+            int resX, int resY, int max);
 
-        [DllImport(@ASM_DLL_Path)]
-        static unsafe extern double CalcNumeratorSecond(double[] result, int resX, int resY, int max, int relDistLen,
-            int[,] relDist, int[,] outputCharPoints);
+   /*     [DllImport(@ASM_DLL_Path)]
+
+        static unsafe extern double CalcIteration(double cumulatedDenom, int resX, int resY, int relDistX, int relDistY, 
+            int outCharX, int outCharY);*/
 
 
         /// <summary>
@@ -813,8 +815,8 @@ namespace ImageMorphing
             Task toReturn = null;
             int[] fColorSource = new int[2];
             int[] sColorSource = new int[2];
-            double[] fPoint = new double[2];
-            double[] sPoint = new double[2];
+            int[] fPoint = new int[2];
+            int[] sPoint = new int[2];
             if (modeOfExecutionFlag == modeOfExecution.csharp)
             {
                     toReturn = new Task(() =>
@@ -876,19 +878,6 @@ namespace ImageMorphing
         int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource,double[] firstPoint, double[] secondPoint)
         {
 
-          /*  RelDistFirst = new int[2,2];
-            RelDistFirst[0, 0] = 1;
-            RelDistFirst[0, 1] = 1;
-            RelDistFirst[1, 0] = 1;
-            RelDistFirst[1, 1] = 1;*/
-            double fPoint = CalcNumeratorFirst(firstPoint, resX, resY, max, RelDistFirst.Length, RelDistFirst, outputCharPoints);
-                double sPoint = CalcNumeratorSecond(firstPoint, resX, resY, max, RelDistFirst.Length, RelDistFirst, outputCharPoints);
-                double fSPoint = CalcNumeratorFirst(secondPoint, resX, resY, max, RelDistSecond.Length, RelDistSecond, outputCharPoints);
-                double sSPoint = CalcNumeratorSecond(secondPoint, resX, resY, max, RelDistSecond.Length, RelDistSecond, outputCharPoints);
-                firstColorSource[0] = System.Convert.ToInt32(fPoint) + resX;
-                firstColorSource[1] = System.Convert.ToInt32(sPoint) + resY;
-                secondColorSource[0] = System.Convert.ToInt32(fSPoint) + resX;
-                secondColorSource[1] = System.Convert.ToInt32(sSPoint) + resY;
 
         }
 
@@ -897,70 +886,13 @@ int[,] RelDistFirst, int[,] RelDistSecond, int[,,] firstColorSource, int[,,] sec
 double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         {
 
-            firstPoint = myMorphing.calcPoint(resX, resY, max, RelDistFirst, outputCharPoints);
-            secondPoint = myMorphing.calcPoint(resX, resY, max, RelDistSecond, outputCharPoints);
 
-            if (!(Double.IsNaN(firstPoint[0]) || Double.IsNaN(firstPoint[1])
-            || Double.IsNaN(secondPoint[0]) || Double.IsNaN(secondPoint[1])))
-            {
-                //ZŁE INDEKSOWANIE !!
-                     firstColorSource[idX, idY, 0] = System.Convert.ToInt32(firstPoint[0]) + resX;
-                     firstColorSource[idX, idY, 1] = System.Convert.ToInt32(firstPoint[1]) + resY;
-                     secondColorSource[idX, idY, 0] = System.Convert.ToInt32(secondPoint[0]) + resX;
-                     secondColorSource[idX, idY, 1] = System.Convert.ToInt32(secondPoint[1]) + resY;
-
-      /*          firstColorSource[resY + maxWidth*resX,0] = System.Convert.ToInt32(firstPoint[0]) + resX;
-     firstColorSource[resY + maxWidth * resX, 1] = System.Convert.ToInt32(firstPoint[1]) + resY;
-     secondColorSource[resY + maxWidth * resX, 0] = System.Convert.ToInt32(secondPoint[0]) + resX;
-     secondColorSource[resY + maxWidth * resX, 1] = System.Convert.ToInt32(secondPoint[1]) + resY;*/
-            }
-            else
-            {
-                return;
-            }
         }
-
-  /*      private void morphingAlgorithmCsharpLocalLambda(int maxCharPts,int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
-        int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint,
-        double[] secondPoint)
-        {
-            Morphing myMorphing = new Morphing();
-            for (int j = startHeight; j < maxHeight; j++)
-            {
-                for (int i = 0; i < maxWidth; i++)
-                {
-     /*               determinePointsForObtainingColorCsharp(i, j, maxCharPts, outputCharPoints,
-            RelDistFirst, RelDistSecond, firstColorSource, secondColorSource, firstPoint, secondPoint, myMorphing);*/
-                 /*       setColorForOutputPixel(firstColorSource, secondColorSource, i, j, findNearestLocalLambda(i, j),
-                            firstImageRGB, secondImageRGB, outputImageRGB, outputImage.Width, outputImage.Height);*/
-     /*               }
-                }
-            }
-        }*/
-
-   /*     private void morphingAlgorithmASMLocalLambda(int maxCharPts, int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
-   int[,] RelDistFirst, int[,] RelDistSecond, int[] firstColorSource, int[] secondColorSource, double[] firstPoint,
-   double[] secondPoint)
-        {
-            for (int j = startHeight; j < maxHeight; j++)
-            {
-                for (int i = 0; i < maxWidth; i++)
-                {
-                    determinePointsForObtainingColorASM(i, j, maxCharPts, outputCharPoints,
-            RelDistFirst, RelDistSecond, firstColorSource, secondColorSource, firstPoint, secondPoint);
-                    lock (_locker)
-                    {
-              /*          setColorForOutputPixel(firstColorSource, secondColorSource, i, j, findNearestLocalLambda(i, j),
-                            firstImageRGB, secondImageRGB, outputImageRGB, outputImage.Width, outputImage.Height);*/
-    /*                }
-                }
-            }
-        }*/
 
         private void morphingAlgorithmCsharp(int maxCharPts, int startHeight, int maxHeight, int maxWidth,
             int[,] outputCharPoints,
-                        int[,] RelDistFirst, int[,] RelDistSecond, double[] firstPoint,
-                            double[] secondPoint, int[,,] firstColorSource, int[,,] secondColorSource)
+                        int[,] RelDistFirst, int[,] RelDistSecond, int[] firstPoint,
+                            int[] secondPoint, int[,,] firstColorSource, int[,,] secondColorSource)
         {
             int borderHeight = maxHeight - startHeight;
             Morphing myMorphing = new Morphing();
@@ -971,25 +903,10 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
 
                     firstPoint = myMorphing.calcPoint(i, j, maxCharPts, RelDistFirst, outputCharPoints);
                     secondPoint = myMorphing.calcPoint(i, j, maxCharPts, RelDistSecond, outputCharPoints);
-
-                    if (!(Double.IsNaN(firstPoint[0]) || Double.IsNaN(firstPoint[1])
-                    || Double.IsNaN(secondPoint[0]) || Double.IsNaN(secondPoint[1])))
-                    {
-                        firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(firstPoint[0]) + i;
-                        firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(firstPoint[1]) + j;
-                        secondColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(secondPoint[0]) + i;
-                        secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(secondPoint[1]) + j;
-                    }
-                    /* firstColorSource[i, j% borderHeight, 0] = i;
-                     firstColorSource[i, j % borderHeight, 1] = j;
-
-                     secondColorSource[i, j % borderHeight, 0] = i;
-                     secondColorSource[i, j % borderHeight, 1] = j;*/
-
-                    /* determinePointsForObtainingColorCsharp(i, j,
-                             maxCharPts, outputCharPoints, i, j % borderHeight,
-                             RelDistFirst, RelDistSecond, firstColorSource, secondColorSource,
-                             firstPoint, secondPoint, myMorphing);*/
+                        firstColorSource[i, j % borderHeight, 0] = firstPoint[0] + i;
+                        firstColorSource[i, j % borderHeight, 1] = firstPoint[1] + j;
+                        secondColorSource[i, j % borderHeight, 0] = secondPoint[0] + i;
+                        secondColorSource[i, j % borderHeight, 1] = secondPoint[1] + j;
                 }
             }
             
@@ -997,34 +914,46 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         }
 
         private void morphingAlgorithmASM(int maxCharPts, int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
-   int[,] RelDistFirst, int[,] RelDistSecond, int[,,] firstColorSource, int[,,] secondColorSource, double[] firstPoint,
-   double[] secondPoint)
+   int[,] RelDistFirst, int[,] RelDistSecond, int[,,] firstColorSource, int[,,] secondColorSource, int[] firstPoint,
+   int[] secondPoint)
         {
             int borderHeight = maxHeight - startHeight;
             for (int j = startHeight; j < maxHeight; j++)
             {
                 for (int i = 0; i < maxWidth; i++)
                 {
-                    double fPoint = CalcNumeratorFirst(firstPoint, i, j, maxCharPts, RelDistFirst.Length, RelDistFirst, outputCharPoints);
-                    double sPoint = CalcNumeratorSecond(firstPoint, i, j, maxCharPts, RelDistFirst.Length, RelDistFirst, outputCharPoints);
-                    double fSPoint = CalcNumeratorFirst(secondPoint, i, j, maxCharPts, RelDistSecond.Length, RelDistSecond, outputCharPoints);
-                    double sSPoint = CalcNumeratorSecond(secondPoint, i, j, maxCharPts, RelDistSecond.Length, RelDistSecond, outputCharPoints);
-
-                    if (!(Double.IsNaN(fPoint) || Double.IsNaN(sPoint)
-                        || Double.IsNaN(fSPoint) || Double.IsNaN(sSPoint)))
+                    unsafe
                     {
-
-                            firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(fPoint) + i;
-                            firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(sPoint) + j;
-                            secondColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(fSPoint) + i;
-                            secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(sSPoint) + j;
-                    }
-                    else
-                    {
-                        return;
+                        /*   int[,] testRelDistFirst = new int[,] { { 136, 40 }, {30, 25 } };
+                              int[,] testOutputCharPoints = new int[,] { { 137, 98 }, {40, 50 } };
+                             int[] test1d = twoDimToOneDim(testOutputCharPoints);
+                              int[] testIntPtr = new int[2] { 2, 3}; */
+                        int[] rel = twoDimToOneDim(RelDistFirst);
+                        int[] outChar = twoDimToOneDim(outputCharPoints);
+                       CalcNumerator(firstPoint, rel, outChar, i, j, maxCharPts);
+                       CalcNumerator(secondPoint, twoDimToOneDim(RelDistSecond), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
+                        firstColorSource[i, j % borderHeight, 0] = firstPoint[0] + i;
+                         firstColorSource[i, j % borderHeight, 1] = firstPoint[1] + j;
+                         secondColorSource[i, j % borderHeight, 0] = secondPoint[0] + i;
+                         secondColorSource[i, j % borderHeight, 1] = secondPoint[1] + j;
                     }
                 }
             }
+        }
+
+        private int[] twoDimToOneDim(int[,] twoDimArray)
+        {
+            int[] toReturn = new int[twoDimArray.GetLength(0) * twoDimArray.GetLength(1)];
+            int oneDimIndex = 0;
+            for(int i = 0; i < twoDimArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < twoDimArray.GetLength(1); j++)
+                {
+                    toReturn[oneDimIndex] = twoDimArray[i, j];
+                    oneDimIndex++;
+                }
+            }
+            return toReturn;
         }
         private int getOutputCharPointsCount(int first, int second)
         {
