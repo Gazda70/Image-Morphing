@@ -61,7 +61,7 @@
   <ItemGroup>
     <Reference Include="MorphingLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\MorphingLibrary\MorphingLibrary\bin\Debug\MorphingLibrary.dll</HintPath>
+      <HintPath>..\..\MorphingLibrary\MorphingLibrary\bin\Release\MorphingLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

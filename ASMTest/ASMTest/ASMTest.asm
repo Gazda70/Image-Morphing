@@ -140,6 +140,10 @@ JNE charPointsLoop
 
 koniec :
 ; podzielenie gotowych wartoœci wspó³rzêdnych przez zbiorczy mianownik
+; sprawdzenie czy zbiorczy mianownik jest niezerowy
+MOVSD help, XMM3
+CMP  help, 0
+JE final_conversion
 DIVSD XMM6, XMM3
 DIVSD XMM7, XMM3
 
@@ -147,6 +151,7 @@ DIVSD XMM7, XMM3
 
 
 ; konwersja z powrotem na liczby ca³kowite
+final_conversion:
 CVTPD2DQ XMM1, XMM6
 CVTPD2DQ XMM2, XMM7
 

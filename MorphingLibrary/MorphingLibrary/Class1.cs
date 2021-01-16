@@ -11,9 +11,9 @@ namespace MorphingLibrary {
     {
 
         public Morphing() { }
-        public int[] calcPoint(int resX, int resY, int max, int[,] relDist, int[,] outputCharPoints)
+        public double[] calcPoint(int resX, int resY, int max, int[,] relDist, int[,] outputCharPoints)
         {
-            double[] total = new double[2];
+            double[] total = new double[2] { 0, 0};
             double actualDenom = 0;
             double cumulatedDenom = 0;
             int[] toReturn = new int[2];
@@ -28,11 +28,15 @@ namespace MorphingLibrary {
                     total[1] += relDist[i, 1] / actualDenom;
                 }
             }
-            total[0] = total[0] / cumulatedDenom;
-            total[1] = total[1] / cumulatedDenom;
-            toReturn[0] = System.Convert.ToInt32(total[0]);
-            toReturn[1] = System.Convert.ToInt32(total[1]);
-            return toReturn;
+            if (cumulatedDenom != 0)
+            {
+                total[0] = total[0] / cumulatedDenom;
+                total[1] = total[1] / cumulatedDenom;
+            }
+           /* toReturn[0] = System.Convert.ToInt32(total[0]);
+            toReturn[1] = System.Convert.ToInt32(total[1]);*/
+
+            return total;
         }
 
     }
