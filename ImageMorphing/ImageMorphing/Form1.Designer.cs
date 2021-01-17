@@ -33,15 +33,10 @@ namespace ImageMorphing
         const string DEFAULT_OUTPUT_IMAGE_PATH =
             "C:/Users/gazda/Desktop/Politechnicznestudia/JA/Projekt/ProjektJA/ImageMorphing/ImageMorphing/bin/x64/Release/output.jpg";
 
-        [DllImport(@ASM_DLL_Path)]
-        //static unsafe extern double CalcNumeratorFirst(int[] result);
-        static unsafe extern double CalcNumerator(int[] result, int[] relDist, int[] outputCharPoints, 
-            int resX, int resY, int max);
-
-   /*     [DllImport(@ASM_DLL_Path)]
-
-        static unsafe extern double CalcIteration(double cumulatedDenom, int resX, int resY, int relDistX, int relDistY, 
-            int outCharX, int outCharY);*/
+        //FUNKCJA STATYCZNA I WĄTKI
+     /*   [DllImport(@ASM_DLL_Path)]
+        static extern double CalcNumerator(int[] result, int[] relDist, int[] outputCharPoints, 
+            int resX, int resY, int max);*/
 
 
         /// <summary>
@@ -666,7 +661,8 @@ namespace ImageMorphing
 
         private void prepareMorphingAlgorithmData()
         {
-           int firstLen = firstImageCharPoints.Count;
+            //ZMIENIONE DLA TESTÓW
+            int firstLen = firstImageCharPoints.Count;
             int secondLen = secondImageCharPoints.Count;
           /*  int firstLen = 2;
              int secondLen = 2;*/
@@ -689,7 +685,14 @@ namespace ImageMorphing
                 sPoints[i, 0] = secondImageCharPoints.ToArray()[i].X;
                 sPoints[i, 1] = secondImageCharPoints.ToArray()[i].Y;
             }
-
+            //ZMIENIONE DLA TESTÓW
+            //TESTOWE PUNKTY CHAR
+            /*oPoints = new int[,] { { 30, 30 }, { 75, 11 } };
+            outputLen = 2;
+            fRelDist = new int[outputLen, 2];
+            sRelDist = new int[outputLen, 2];
+            fPoints = new int[,] { { 24, 1}, { 36, 90} };
+            sPoints = new int[,] { { 24, 11 }, { 56, 93} };*/
             //KOLEJNOŚĆ CZYNNOŚCI, NIE MOŻNA LICZYĆ DYSTANSÓW RELATYWNCYH PRZED OBLICZENIEM PUNKTÓW
             //CHARAKTERYSTYCZNYCH NA OBRAZIE WYJŚCIOWYM
             setCharacteristicPoints(oPoints, fPoints, sPoints, outputLen);
@@ -920,9 +923,9 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
                         double[] secondPointD = myMorphing.calcPoint(i, j, maxCharPts, RelDistSecond, outputCharPoints);
 
                     firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(firstPointD[0]) + i;
-                             firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(firstPointD[1]) + j;
-                             secondColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(secondPointD[0]) + i;
-                             secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(secondPointD[1]) + j;
+                    firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(firstPointD[1]) + j;
+                    secondColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(secondPointD[0])+ i;
+                    secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(secondPointD[1])+ j;
                 }
             }
             
@@ -941,32 +944,34 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
                 for (int i = 0; i < maxWidth; i++)
                 {
 
-                /*    int[] testOutPt = new int[2] { 199, 265 };
-                    int[] testRelDist = new int[2] {  0, 0  };
-                    int testX = 103;
-                    int testY = 22;
-                    int testMaxCharPts = 1;
+                    /*    int[] testOutPt = new int[2] { 199, 265 };
+                        int[] testRelDist = new int[2] {  0, 0  };
+                        int testX = 103;
+                        int testY = 22;
+                        int testMaxCharPts = 1;
 
-                    CalcNumerator(firstPointDouble, testRelDist, testOutPt, testX, testY, testMaxCharPts);*/
-
-
-                    int[] rel = twoDimToOneDim(RelDistFirst);
-                        int[] outChar = twoDimToOneDim(outputCharPoints);
-                        CalcNumerator(firstPoint, rel, outChar, i, j, maxCharPts);
-                        CalcNumerator(secondPoint, twoDimToOneDim(RelDistSecond), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
+                        CalcNumerator(firstPointDouble, testRelDist, testOutPt, testX, testY, testMaxCharPts);*/
+                    //    CalcNumerator(firstPoint, twoDimToOneDim(RelDistFirst), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
+                    //    CalcNumerator(secondPoint, twoDimToOneDim(RelDistSecond), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
                     /*    if (!(double.IsNaN(firstPointDouble[0]) || double.IsNaN(firstPointDouble[1])
                             || double.IsNaN(secondPointDouble[0]) || double.IsNaN(secondPointDouble[1])))
                         {*/
+                    lock(_locker){
+                        AssemblyMorphing myMorphing = new AssemblyMorphing();
+
+                        firstPoint = myMorphing.AssemblyMorpher(twoDimToOneDim(RelDistFirst), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
+                        secondPoint = myMorphing.AssemblyMorpher(twoDimToOneDim(RelDistSecond), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
                         try
                         {
-                        firstColorSource[i, j % borderHeight, 0] = firstPoint[0] + i;
-                        firstColorSource[i, j % borderHeight, 1] = firstPoint[1] + j;
-                        secondColorSource[i, j % borderHeight, 0] = secondPoint[0] + i;
-                        secondColorSource[i, j % borderHeight, 1] = secondPoint[1] + j;
-                        }catch(Exception exc)
+                            firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(firstPoint[0]) + i;
+                            firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(firstPoint[1]) + j;
+                            secondColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(secondPoint[0]) + i;
+                            secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(secondPoint[1]) + j;
+                        } catch (Exception exc)
                         {
                             return;
                         }
+                    }
                      //   }
                 }
             }
