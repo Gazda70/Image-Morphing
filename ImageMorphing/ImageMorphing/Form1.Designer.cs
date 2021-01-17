@@ -908,17 +908,10 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         {
             int borderHeight = maxHeight - startHeight;
             Morphing myMorphing = new Morphing();
-         /*   int[,] testOutPt = new int[,] { { 199, 265 }};
-            int[,] testRelDist = new int[,] { {0, 0}} ;
-            int testX = 103;
-            int testY = 22;
-            int testMaxCharPts = 1;*/
             for (int j = startHeight; j < maxHeight; j++)
                    {
                 for (int i = 0; i < maxWidth; i++)
                 {
-                 /*   double[] firstPointD = myMorphing.calcPoint(testX, testY, testMaxCharPts, testRelDist, testOutPt);
-                    double[] secondPointD = myMorphing.calcPoint(i, j, maxCharPts, RelDistSecond, outputCharPoints);*/
                         double[] firstPointD = myMorphing.calcPoint(i, j, maxCharPts, RelDistFirst, outputCharPoints);
                         double[] secondPointD = myMorphing.calcPoint(i, j, maxCharPts, RelDistSecond, outputCharPoints);
 
@@ -928,8 +921,6 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
                     secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(secondPointD[1])+ j;
                 }
             }
-            
-         //   }
         }
 
         private void morphingAlgorithmASM(int maxCharPts, int startHeight, int maxHeight, int maxWidth, int[,] outputCharPoints,
@@ -956,12 +947,11 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
                     /*    if (!(double.IsNaN(firstPointDouble[0]) || double.IsNaN(firstPointDouble[1])
                             || double.IsNaN(secondPointDouble[0]) || double.IsNaN(secondPointDouble[1])))
                         {*/
-                    lock(_locker){
                         AssemblyMorphing myMorphing = new AssemblyMorphing();
 
                         firstPoint = myMorphing.AssemblyMorpher(twoDimToOneDim(RelDistFirst), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
                         secondPoint = myMorphing.AssemblyMorpher(twoDimToOneDim(RelDistSecond), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
-                        try
+                    try
                         {
                             firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(firstPoint[0]) + i;
                             firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(firstPoint[1]) + j;
@@ -971,8 +961,6 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
                         {
                             return;
                         }
-                    }
-                     //   }
                 }
             }
         }
@@ -1084,8 +1072,6 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         private enum pointsPuttingMode { standardPoints, localLambdaPoints};
         private enum modeOfExecution { csharp, assembly};
         static readonly object _locker = new object();
-        static readonly object _innerLocker = new object();
-        Semaphore semaphoreObject = new Semaphore(initialCount: 1, maximumCount: 1, name:"SetOutputBitmapColor");
         Task[] threads;
         int outputLen;
         int[,] oPoints;
