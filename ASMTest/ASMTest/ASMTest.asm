@@ -6,7 +6,7 @@ resY QWORD 0
 max QWORD 0
 outputCharPtsPointer QWORD 0
 relDistPointer QWORD 0
-help QWORD 0.0
+help SQWORD 0.0
 cumulatedDenom REAL8 0.0
 zero REAL8 0.0
 one REAL8 1.0
@@ -19,7 +19,7 @@ indeks QWORD 0
 
 .code
 
-; firstPoint, RelDistFirst, outputCharPoints, i, j, maxCharPts, RelDistFirst.Length
+; firstPoint, RelDistFirst, outputCharPoints, i, j, maxCharPts
 ; tak powinno siê odczytywaæ dane z tablic i zapisywaæ do nich
 ; MOV RBX, QWORD PTR[R8]
 ; ADD RBX, RAX
@@ -71,42 +71,60 @@ MOV R14, outputCharPtsPointer
 ADD R14, indeks
 MOV R12, QWORD PTR[R14]
 AND R12, only32bit
-SUB R12, resX
+MOV help, R12
+MOVSD XMM0, help
+SUBSD XMM0, resX
 MOV R11, QWORD PTR[R14 + 4]
 AND R11, only32bit
-SUB R11, resY
+MOV help, R11
+MOVSD XMM1, help
+SUBSD XMM1, resY
 
 ; wyznaczenie sumy kwadratów wczeœniej obliczonych ró¿nic
-MOV RAX, R12
+MOVSD help, XMM0
+MOV RAX, help
+AND RAX, only32bit
 MUL RAX
 MOV R12, RAX
-MOV RAX, R11
+MOVSD help, XMM1
+MOV RAX, help
+AND RAX, only32bit
 MUL RAX
 ADD RAX, R12
 
-; sprawdzenie czy suma jest niezerowa
-CMP RAX, 0
-JE ifzero
 MOV help, RAX
 MOVSD XMM2, help
+CVTDQ2PD XMM1, XMM2
+
+; sprawdzenie czy suma jest niezerowa
+; CMP RAX, 0
+; JE ifzero
+; MOV help, RAX
+; MOVSD XMM2, help
 
 
 ; konwersja na liczbê zmiennoprzecinkow¹ w celu umo¿liwienia dalszych obliczeñ
-CVTDQ2PD XMM1, XMM2
+; CVTDQ2PD XMM1, XMM2
 
-; obliczenie odwrotnoœci aktalnego mianownika i dodanie jej zbiorczego mianownika
-; !dzia³anie MOVSD : [RDI] < -[RSI]
+;z³e porównanie
+MOVSD XMM0, zero
+COMISD XMM1, XMM0
+JE ifzero
+
+; nie wiem czy tu sie dobrze liczy
+; obliczenie odwrotnoœci aktualnego mianownika i dodanie jej do zbiorczego mianownika
 MOVSD XMM0, one
 DIVSD XMM0, XMM1
 
 ; aktualizacja wartoœci zbiorczego mianownika
 ADDSD XMM3, XMM0
+nop;
 
 ; inkrementacja indeksu
-MOV RAX, 8
-MUL R10
+; MOV RAX, 8
+; MUL R10
 
-	; wyci¹gniêcie z tablicy i konwersja aktualnych relatywnych dystansów
+; wyci¹gniêcie z tablicy i konwersja aktualnych relatywnych dystansów
 MOV R14, relDistPointer
 ADD R14, indeks
 MOV R11, [R14]
@@ -121,6 +139,12 @@ MOV help, R11
 MOVD XMM0, help
 CVTDQ2PD XMM5, XMM0
 
+; mo¿e tu daæ only32bit
+; je¿eli nie ma tej czêœci to obraz jest ca³y w jednym kolorze, najpewniej kolorze piksela w lewym górnym rogu
+; jeœli wystêpuje to nie ma zmian ze wzglêdu na punkty charakt i s¹ paski
+MOVSD XMM0, zero
+COMISD XMM1, XMM0
+JE ifzero
 ; podzielenie przez aktualny mianownik
 DIVSD XMM4, XMM1
 DIVSD XMM5, XMM1
@@ -141,9 +165,10 @@ JNE charPointsLoop
 koniec :
 ; podzielenie gotowych wartoœci wspó³rzêdnych przez zbiorczy mianownik
 ; sprawdzenie czy zbiorczy mianownik jest niezerowy
-MOVSD help, XMM3
-CMP  help, 0
-JE final_conversion
+; ZAKOMENTOWANE WA¯NE SPRAWDZANIE
+MOVSD XMM0, zero
+COMISD XMM3, XMM0
+JE write_table
 DIVSD XMM6, XMM3
 DIVSD XMM7, XMM3
 
@@ -151,12 +176,13 @@ DIVSD XMM7, XMM3
 
 
 ; konwersja z powrotem na liczby ca³kowite
-final_conversion:
+; final_conversion:
 CVTPD2DQ XMM1, XMM6
 CVTPD2DQ XMM2, XMM7
 
 
 ; zapis do tablicy wynikowej
+write_table:
 MOVD QWORD PTR[RCX], XMM1
 MOVD QWORD PTR[RCX + 4], XMM2
 

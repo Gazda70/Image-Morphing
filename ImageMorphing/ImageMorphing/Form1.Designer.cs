@@ -102,7 +102,7 @@ namespace ImageMorphing
             this.inputPictureBox1.Name = "inputPictureBox1";
             this.inputPictureBox1.Size = new System.Drawing.Size(427, 403);
             this.inputPictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.inputPictureBox1.TabIndex = 0;
+           // this.inputPictureBox1.TabIndex = 0;
             this.inputPictureBox1.TabStop = false;
             this.inputPictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
             this.inputPictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
@@ -147,7 +147,7 @@ namespace ImageMorphing
             this.inputPictureBox2.Location = new System.Drawing.Point(552, 12);
             this.inputPictureBox2.Name = "inputPictureBox2";
             this.inputPictureBox2.Size = new System.Drawing.Size(427, 403);
-            this.inputPictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+           // this.inputPictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.inputPictureBox2.TabIndex = 5;
             this.inputPictureBox2.TabStop = false;
             this.inputPictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
@@ -186,7 +186,7 @@ namespace ImageMorphing
             this.outputPictureBox.Location = new System.Drawing.Point(1070, 12);
             this.outputPictureBox.Name = "outputPictureBox";
             this.outputPictureBox.Size = new System.Drawing.Size(427, 403);
-            this.outputPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+           // this.outputPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.outputPictureBox.TabIndex = 12;
             this.outputPictureBox.TabStop = false;
             // 
@@ -905,31 +905,24 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
         {
             int borderHeight = maxHeight - startHeight;
             Morphing myMorphing = new Morphing();
-                  for (int j = startHeight; j < maxHeight; j++)
+         /*   int[,] testOutPt = new int[,] { { 199, 265 }};
+            int[,] testRelDist = new int[,] { {0, 0}} ;
+            int testX = 103;
+            int testY = 22;
+            int testMaxCharPts = 1;*/
+            for (int j = startHeight; j < maxHeight; j++)
                    {
                 for (int i = 0; i < maxWidth; i++)
                 {
-                    /*double[] firstPointD = myMorphing.calcPoint(i, j % borderHeight, maxCharPts, RelDistFirst, outputCharPoints);
-                    double[] secondPointD = myMorphing.calcPoint(i, j % borderHeight, maxCharPts, RelDistSecond, outputCharPoints);*/
+                 /*   double[] firstPointD = myMorphing.calcPoint(testX, testY, testMaxCharPts, testRelDist, testOutPt);
+                    double[] secondPointD = myMorphing.calcPoint(i, j, maxCharPts, RelDistSecond, outputCharPoints);*/
+                        double[] firstPointD = myMorphing.calcPoint(i, j, maxCharPts, RelDistFirst, outputCharPoints);
+                        double[] secondPointD = myMorphing.calcPoint(i, j, maxCharPts, RelDistSecond, outputCharPoints);
 
-                    double[] firstPointD = myMorphing.calcPoint(i, j, maxCharPts, RelDistFirst, outputCharPoints);
-                    double[] secondPointD = myMorphing.calcPoint(i, j, maxCharPts, RelDistSecond, outputCharPoints);
-                    try
-                    {
-
-                           firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(firstPointD[0]) + i;
+                    firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(firstPointD[0]) + i;
                              firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(firstPointD[1]) + j;
                              secondColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(secondPointD[0]) + i;
                              secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(secondPointD[1]) + j;
-                        /*   firstColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(firstPointD[0]) % outputImageMaxWidth + i;
-                           firstColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(firstPointD[1]) % outputImageMaxHeight + j;
-                           secondColorSource[i, j % borderHeight, 0] = System.Convert.ToInt32(secondPointD[0]) % outputImageMaxWidth + i;
-                           secondColorSource[i, j % borderHeight, 1] = System.Convert.ToInt32(secondPointD[1]) % outputImageMaxHeight + j;*/
-                    }
-                    catch (Exception e)
-                    {
-                        return;
-                    }
                 }
             }
             
@@ -941,25 +934,40 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
    int[] secondPoint)
         {
             int borderHeight = maxHeight - startHeight;
+            double[] firstPointDouble = new double[2];
+            double[] secondPointDouble = new double[2];
             for (int j = startHeight; j < maxHeight; j++)
             {
                 for (int i = 0; i < maxWidth; i++)
                 {
-                    unsafe
-                    {
-                        /*   int[,] testRelDistFirst = new int[,] { { 136, 40 }, {30, 25 } };
-                              int[,] testOutputCharPoints = new int[,] { { 137, 98 }, {40, 50 } };
-                             int[] test1d = twoDimToOneDim(testOutputCharPoints);
-                              int[] testIntPtr = new int[2] { 2, 3}; */
-                        int[] rel = twoDimToOneDim(RelDistFirst);
+
+                /*    int[] testOutPt = new int[2] { 199, 265 };
+                    int[] testRelDist = new int[2] {  0, 0  };
+                    int testX = 103;
+                    int testY = 22;
+                    int testMaxCharPts = 1;
+
+                    CalcNumerator(firstPointDouble, testRelDist, testOutPt, testX, testY, testMaxCharPts);*/
+
+
+                    int[] rel = twoDimToOneDim(RelDistFirst);
                         int[] outChar = twoDimToOneDim(outputCharPoints);
-                       CalcNumerator(firstPoint, rel, outChar, i, j, maxCharPts);
-                       CalcNumerator(secondPoint, twoDimToOneDim(RelDistSecond), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
+                        CalcNumerator(firstPoint, rel, outChar, i, j, maxCharPts);
+                        CalcNumerator(secondPoint, twoDimToOneDim(RelDistSecond), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
+                    /*    if (!(double.IsNaN(firstPointDouble[0]) || double.IsNaN(firstPointDouble[1])
+                            || double.IsNaN(secondPointDouble[0]) || double.IsNaN(secondPointDouble[1])))
+                        {*/
+                        try
+                        {
                         firstColorSource[i, j % borderHeight, 0] = firstPoint[0] + i;
                         firstColorSource[i, j % borderHeight, 1] = firstPoint[1] + j;
                         secondColorSource[i, j % borderHeight, 0] = secondPoint[0] + i;
                         secondColorSource[i, j % borderHeight, 1] = secondPoint[1] + j;
-                    }
+                        }catch(Exception exc)
+                        {
+                            return;
+                        }
+                     //   }
                 }
             }
         }
@@ -1032,24 +1040,6 @@ double[] firstPoint, double[] secondPoint, Morphing myMorphing)
                 {
                 secondColorSourceY = 1;
                 }
-
-       /*     if (colorDestinationX >= width)
-            {
-                colorDestinationX = width - 1;
-            }
-            if (colorDestinationY >= height)
-            {
-                colorDestinationY = height - 1;
-            }
-
-            if (colorDestinationX <= 0)
-            {
-                colorDestinationX = 1;
-            }
-            if (colorDestinationY <= 0)
-            {
-                colorDestinationY = 1;
-            }*/
               Color secondColor = /*Color.FromArgb(mySecond[(firstColorSourceX + secondColorSourceY * width) * 3 + 2],
                            mySecond[(firstColorSourceX + secondColorSourceY * width) * 3 + 1],
                            mySecond[(firstColorSourceX + secondColorSourceY * width) * 3]);*/
