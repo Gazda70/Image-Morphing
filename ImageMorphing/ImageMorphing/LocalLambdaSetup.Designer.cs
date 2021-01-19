@@ -106,12 +106,12 @@ namespace ImageMorphing
             parentForm.addNewLocalLambda(myLambda);
             this.localLambdaValueLabel.Text = System.Convert.ToString(myLambda);
         }
-        public void setParentForm(Form1 newParentForm)
+        public void setParentForm(ImageMorphing newParentForm)
         {
             this.parentForm = newParentForm;
         }
 
-        Form1 parentForm;
+        ImageMorphing parentForm;
         private System.Windows.Forms.Label localLambdaInfoLabel;
         private System.Windows.Forms.TrackBar localLambdaValueTrackBar;
         private System.Windows.Forms.Label localLambdaValueLabel;

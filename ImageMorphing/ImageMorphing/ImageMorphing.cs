@@ -12,10 +12,10 @@ using MorphingLibrary;
 
 namespace ImageMorphing
 {
-    public partial class Form1 : Form
+    public partial class ImageMorphing : Form
     {
         Morphing myMorpher;
-        public Form1()
+        public ImageMorphing()
         {
             InitializeComponent();
         }

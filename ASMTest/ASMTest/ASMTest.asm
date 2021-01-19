@@ -6,61 +6,47 @@ resY QWORD 0
 max QWORD 0
 outputCharPtsPointer QWORD 0
 relDistPointer QWORD 0
-help SQWORD 0.0
-cumulatedDenom REAL8 0.0
 zero REAL8 0.0
 one REAL8 1.0
-only32bit QWORD 00000000FFFFFFFFH
-eight QWORD 8
-four QWORD 4
-two QWORD 2
 indeks QWORD 0
 
 
 .code
 
-; firstPoint, RelDistFirst, outputCharPoints, i, j, maxCharPts
-; tak powinno siê odczytywaæ dane z tablic i zapisywaæ do nich
-; MOV RBX, QWORD PTR[R8]
-; ADD RBX, RAX
-; MOV R11, [R8 + 4]
-; MOV R12, [RDX]
-; MOV R13, [RDX + 4]
-; MOV R12, [RDX + 8]
-; MOV R13, [RDX + 12]
-; MOV QWORD PTR[RCX], 0
-; MOV QWORD PTR[RCX + 4], 1
-
 CalcNumerator PROC
 
-; RCX = > adres tablicy na wynik
-; po³o¿enie aktualnego pixela
+; RDX = > adres tablicy dystansów relatywnych
 MOV relDistPointer, RDX
+
+; R8 = > adres tablicy punktów charakterystycznych
 MOV outputCharPtsPointer, R8
+
+; R9 = > wartoœæ wspó³rzêdnej poziomej aktualnie analizowanego piksela
 MOV resX, R9
+
+; rsp + 8 * 5 = > wartoœæ wspó³rzêdnej pionowej aktualnie analizowanego piksela
 MOV RAX, QWORD PTR[rsp + 8 * 5]
 MOV resY, RAX
-; rozmiar tablicy z aktualnie branymi pod uwagê punktami charakterystycznymi
+
+; rsp + 8 * 6 = > rozmiar tablicy z aktualnie branymi pod uwagê punktami charakterystycznymi
 MOV RAX, QWORD PTR[rsp + 8 * 6]
 MOV max, RAX
 ; rozmiar tablicy dytansów relatywnych - bierzemy pod uwagê tylko taki
 ; fragment tablicy dystansów relatywnych który ma tak¹ sam¹ d³ugoœæ jak
 ;aktualnie analizowany fragment tablicy punktów charakterystycznych
-; RDX = > adres tablicy z dystansami relatywnymi
-; R8 = > adres tablicy z punktami charakterystycznymi
 
-; inicjalizacja zbiorczego mianownika, rejestrów do przechowywania wspó³rzêdnych
-; w trakcie pracy pêtli oraz tablicy na wynik
+; inicjalizacja zbiorczego mianownika (XMM3), rejestrów do przechowywania wspó³rzêdnych (XMM6, XMM7)
 MOVSD XMM3, zero
 MOVSD XMM6, zero
 MOVSD XMM7, zero
 
-; licznik pêtli
+; inicjalizacja licznika pêtli
 MOV R10, 0
-MOV RAX, 0
+
 ; pêtla przechodz¹ca przez tablicê punktów charakterystycznych
 charPointsLoop :
 
+; aktualizacja wartoœci indeksu do obs³ugi dostêpu do tablic
 MOV RAX, 8
 MUL R10
 MOV indeks, RAX
@@ -69,123 +55,78 @@ MOV indeks, RAX
 ; oraz wspó³rzêdnych aktualnego piksela
 MOV R14, outputCharPtsPointer
 ADD R14, indeks
-MOV R12, QWORD PTR[R14]
-AND R12, only32bit
-MOV help, R12
-MOVSD XMM0, help
+MOV EAX, [R14]
+MOVD XMM0, EAX
 SUBSD XMM0, resX
-MOV R11, QWORD PTR[R14 + 4]
-AND R11, only32bit
-MOV help, R11
-MOVSD XMM1, help
+MOV EAX, [R14 + 4]
+MOVD XMM1, EAX
 SUBSD XMM1, resY
 
 ; wyznaczenie sumy kwadratów wczeœniej obliczonych ró¿nic
-MOVSD help, XMM0
-MOV RAX, help
-AND RAX, only32bit
+MOVQ RAX, XMM0
 MUL RAX
 MOV R12, RAX
-MOVSD help, XMM1
-MOV RAX, help
-AND RAX, only32bit
+MOVQ RAX, XMM1
 MUL RAX
 ADD RAX, R12
 
-MOV help, RAX
-MOVSD XMM2, help
+; konwersja obliczonej sumy na liczbê zmiennoprzecinkow¹, przeniesienie jej do rejestru XMM
+; oraz sprawdzenie czy jest niezerowa
+MOVQ XMM2, RAX
 CVTDQ2PD XMM1, XMM2
-
-; sprawdzenie czy suma jest niezerowa
-; CMP RAX, 0
-; JE ifzero
-; MOV help, RAX
-; MOVSD XMM2, help
-
-
-; konwersja na liczbê zmiennoprzecinkow¹ w celu umo¿liwienia dalszych obliczeñ
-; CVTDQ2PD XMM1, XMM2
-
-;z³e porównanie
 MOVSD XMM0, zero
 COMISD XMM1, XMM0
 JE ifzero
 
-; nie wiem czy tu sie dobrze liczy
 ; obliczenie odwrotnoœci aktualnego mianownika i dodanie jej do zbiorczego mianownika
 MOVSD XMM0, one
 DIVSD XMM0, XMM1
 
 ; aktualizacja wartoœci zbiorczego mianownika
 ADDSD XMM3, XMM0
-nop;
 
-; inkrementacja indeksu
-; MOV RAX, 8
-; MUL R10
-
-; wyci¹gniêcie z tablicy i konwersja aktualnych relatywnych dystansów
+; uzyskanie z tablicy, konwersja i przeniesienie do rejestrów XMM aktualnego relatywnego dystansu
 MOV R14, relDistPointer
 ADD R14, indeks
-MOV R11, [R14]
-AND R11, only32bit
-MOV help, R11
-MOVD XMM0, help
+MOV EAX, [R14]
+MOVD XMM0, EAX
 CVTDQ2PD XMM4, XMM0
-; b³¹d dostêpu
-MOV R11, [R14 + 4]
-AND R11, only32bit
-MOV help, R11
-MOVD XMM0, help
+MOV EAX, [R14 + 4]
+MOVD XMM0, EAX
 CVTDQ2PD XMM5, XMM0
 
-; mo¿e tu daæ only32bit
-; je¿eli nie ma tej czêœci to obraz jest ca³y w jednym kolorze, najpewniej kolorze piksela w lewym górnym rogu
-; jeœli wystêpuje to nie ma zmian ze wzglêdu na punkty charakt i s¹ paski
-MOVSD XMM0, zero
-COMISD XMM1, XMM0
-JE ifzero
-; podzielenie przez aktualny mianownik
+; podzielenie relatywnego dystansu przez zbiorczy mianownik
 DIVSD XMM4, XMM1
 DIVSD XMM5, XMM1
-
 
 ; dodanie do zbiorczych wspó³rzêdnych
 ADDSD XMM6, XMM4
 ADDSD XMM7, XMM5
 
-
-	ifzero :
 ; obs³uga licznika pêtli
+ifzero :
 INC R10
 CMP R10, max
 JNE charPointsLoop
 
-
 koniec :
-; podzielenie gotowych wartoœci wspó³rzêdnych przez zbiorczy mianownik
 ; sprawdzenie czy zbiorczy mianownik jest niezerowy
-; ZAKOMENTOWANE WA¯NE SPRAWDZANIE
 MOVSD XMM0, zero
 COMISD XMM3, XMM0
+
+; podzielenie gotowych wartoœci wspó³rzêdnych przez zbiorczy mianownik
 JE write_table
 DIVSD XMM6, XMM3
 DIVSD XMM7, XMM3
 
-; OBLICZENIA DZIA£AJ¥
-
-
-; konwersja z powrotem na liczby ca³kowite
-; final_conversion:
+; konwersja wartoœci wspó³rzêdnych z powrotem na liczby ca³kowite
 CVTPD2DQ XMM1, XMM6
 CVTPD2DQ XMM2, XMM7
-
 
 ; zapis do tablicy wynikowej
 write_table:
 MOVD SDWORD PTR[RCX], XMM1
 MOVD SDWORD PTR[RCX + 4], XMM2
-
 
 RET
 

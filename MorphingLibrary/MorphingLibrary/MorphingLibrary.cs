@@ -7,11 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MorphingLibrary { 
+
+    /*Klasa zawierająca metodę biblioteczną*/
     public class Morphing
     {
 
         public Morphing() { }
-        public double[] calcPoint(int resX, int resY, int max, int[,] relDist, int[,] outputCharPoints)
+
+        /*Metoda biblioteczna - odpowiedzialna za obliczenie współrzędnych piksela bitmapy wejściowej który będzie
+        jednym z dwóch źródeł koloru dla przetwarzanego piksela bitmapy wyjściowej. Metoda jest zawsze wywoływana
+            dwukrotnie - dla obliczenia piksela-źródła z pierwszej i drugiej bitmapy wejściowej.*/
+        public int[] calcPoint(int resX, int resY, int max, int[,] relDist, int[,] outputCharPoints)
         {
             double[] total = new double[2] { 0, 0};
             double actualDenom = 0;
@@ -33,10 +39,10 @@ namespace MorphingLibrary {
                 total[0] = total[0] / cumulatedDenom;
                 total[1] = total[1] / cumulatedDenom;
             }
-           /* toReturn[0] = System.Convert.ToInt32(total[0]);
-            toReturn[1] = System.Convert.ToInt32(total[1]);*/
+            toReturn[0] = System.Convert.ToInt32(total[0]);
+            toReturn[1] = System.Convert.ToInt32(total[1]);
 
-            return total;
+            return toReturn;
         }
 
     }
