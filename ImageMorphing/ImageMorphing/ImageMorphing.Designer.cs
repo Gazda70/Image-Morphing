@@ -6,6 +6,9 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Office.Core;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.Reflection;
 
 
 namespace ImageMorphing
@@ -336,7 +339,10 @@ namespace ImageMorphing
         {
             this.firstImageCharPoints.Clear();
             this.secondImageCharPoints.Clear();
-            this.localLambda.Clear();
+            if (this.localLambda != null)
+            {
+                this.localLambda.Clear();
+            }
         }
 
         /*Metoda odpowiedzialna za obsługę umieszczania punktów na pierwszym obrazie (pierwszym polu obrazu)*/
@@ -669,6 +675,10 @@ namespace ImageMorphing
 
                     Task.WaitAll(threads);
             }
+            double[,] csharpTimes = new double[64, 1];
+            csharpTimes[1,0] = 0.456;
+            double[,] asmTimes = new double[64, 1];
+            excelWriter(csharpTimes, asmTimes);
         }
 
         /*Metoda odpowiedzialna za podział bitmapy na fragmenty obsługiwane przez kolejne wątki oraz utworzenie obiektów tych wątków*/
@@ -805,31 +815,32 @@ namespace ImageMorphing
         private void morphingAlgorithmASM(int maxCharPts, int startHeight, int maxHeight,int maxWidth, int[,] outputCharPoints,
    int[,] RelDistFirst, int[,] RelDistSecond,int bitmapWidth, int bitmapHeight, bool lambdaFlag)
         {
-            int[] firstPoint = new int[2];
-            int[] secondPoint = new int[2];
-            for (int j = startHeight; j < maxHeight; j++)
-            {
-                for (int i = 0; i < maxWidth; i++)
+                int[] firstPoint = new int[2];
+                int[] secondPoint = new int[2];
+                for (int j = startHeight; j < maxHeight; j++)
                 {
+                    for (int i = 0; i < maxWidth; i++)
+                    {
                         AssemblyMorphing myMorphing = new AssemblyMorphing();
 
                         firstPoint = myMorphing.AssemblyMorpher(twoDimToOneDim(RelDistFirst), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
                         secondPoint = myMorphing.AssemblyMorpher(twoDimToOneDim(RelDistSecond), twoDimToOneDim(outputCharPoints), i, j, maxCharPts);
-                    lock (_locker)
-                    {
-                        if (lambdaFlag)
+                        lock (_locker)
                         {
-                            setColorForOutputPixel(firstPoint[0] + i, firstPoint[1] + j,
-                                secondPoint[0] + i, secondPoint[1] + j, i, j, findNearestLocalLambda(i, j), bitmapWidth, bitmapHeight);
-                        }
-                        else
-                        {
-                            setColorForOutputPixel(firstPoint[0] + i, firstPoint[1] + j,
-                            secondPoint[0] + i, secondPoint[1] + j, i, j, globalLambda,bitmapWidth, bitmapHeight);
+                            if (lambdaFlag)
+                            {
+                                setColorForOutputPixel(firstPoint[0] + i, firstPoint[1] + j,
+                                    secondPoint[0] + i, secondPoint[1] + j, i, j, findNearestLocalLambda(i, j), bitmapWidth, bitmapHeight);
+                            }
+                            else
+                            {
+                                setColorForOutputPixel(firstPoint[0] + i, firstPoint[1] + j,
+                                secondPoint[0] + i, secondPoint[1] + j, i, j, globalLambda, bitmapWidth, bitmapHeight);
+                            }
                         }
                     }
                 }
-            }
+            
         }
 
         /*Metoda odpowiedzialna za stworzenie tablicy jednowymiarowej z tablicy dwuwymiarowej*/
@@ -912,6 +923,89 @@ namespace ImageMorphing
         public void addNewLocalLambda(double newLambda)
         {
             temporaryLambda = newLambda;
+        }
+
+        private void excelWriter(double[,] csharpTimes, double[,] asmTimes)
+        {
+            Excel.Application objApp;
+            Excel._Workbook objBook;
+                Excel.Workbooks objBooks;
+                Excel.Sheets objSheets;
+                Excel._Worksheet objSheet;
+                Excel.Range indicesRange;
+                Excel.Range csharpResRange;
+                Excel.Range asmResRange;
+            object misValue = System.Reflection.Missing.Value;
+
+            try
+            {
+                // Instantiate Excel and start a new workbook.
+                objApp = new Excel.Application();
+                objBooks = objApp.Workbooks;
+                objBook = (Excel._Workbook)(objBooks.Open("C:/Users/gazda/Desktop/test.xlsx", misValue, misValue,
+                  misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue));
+                objSheets = objBook.Worksheets;
+                objSheet = (Excel._Worksheet)objSheets.get_Item(1);
+                //Get the range where the starting cell has the address
+                //m_sStartingCell and its dimensions are m_iNumRows x m_iNumCols.
+                indicesRange = objSheet.get_Range("A1", Missing.Value);
+                indicesRange = indicesRange.get_Resize(64, 1);
+
+                    //Create an array.
+                    double[,] saRet = new double[64, 1];
+
+                    //Fill the array.
+                    for (long iRow = 0; iRow < 64; iRow++)
+                    {
+                        for (long iCol = 0; iCol < 1; iCol++)
+                        {
+                            //Put a counter in the cell.
+                            saRet[iRow, iCol] = iRow  + 0.5;
+                        }
+                    }
+
+
+                //Set the range value to the array.
+                indicesRange.set_Value(Missing.Value, saRet);
+                    /*     //Get the range where the starting cell has the address
+                         //m_sStartingCell and its dimensions are m_iNumRows x m_iNumCols.
+                         indicesRange = objSheet.get_Range("A2", Missing.Value);
+                         indicesRange = indicesRange.get_Resize(64, 1);
+                        // indicesRange.NumberFormat = "$0.00";
+
+                         csharpResRange = objSheet.get_Range("B2", Missing.Value);
+                         csharpResRange = indicesRange.get_Resize(64, 1);
+
+                         asmResRange = objSheet.get_Range("C2", Missing.Value);
+                         asmResRange = indicesRange.get_Resize(64, 1);
+                         //Create an array.
+                         double[,] saRet = new double[64,1];
+                         saRet[0,0] = 1;
+
+                             //Fill the array.
+
+
+                         //Set the range value to the array.
+                         indicesRange.set_Value(Missing.Value, saRet);
+
+                         csharpResRange.set_Value(Missing.Value, csharpTimes);
+
+                         asmResRange.set_Value(Missing.Value, asmTimes);*/
+
+                    //Return control of Excel to the user.
+                    objApp.Visible = true;
+                objApp.UserControl = true;
+            }
+            catch (Exception theException)
+            {
+                String errorMessage;
+                errorMessage = "Error: ";
+                errorMessage = String.Concat(errorMessage, theException.Message);
+                errorMessage = String.Concat(errorMessage, " Line: ");
+                errorMessage = String.Concat(errorMessage, theException.Source);
+
+                MessageBox.Show(errorMessage, "Error");
+            }
         }
 
 

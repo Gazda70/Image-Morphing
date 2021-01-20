@@ -28,10 +28,7 @@ namespace ImageMorphing
     int resX, int resY, int max)
         {
             int[] result = new int[2];
-            lock(_locker)
-            {
                 CalcNumerator(result, relDist, outputCharPoints, resX, resY, max);
-            }
             return result;
         }
     }
