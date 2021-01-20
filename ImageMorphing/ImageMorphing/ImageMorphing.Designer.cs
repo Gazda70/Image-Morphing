@@ -451,7 +451,8 @@ namespace ImageMorphing
                     {
                         secondImageCharPoints = new List<Point>();
                     }
-                    createOutputImage();
+            //createOutputImage();
+            velocityTest("C:/Users/gazda/Desktop/test.xlsx");
                     this.outputPictureBox.Image = outputImage;  
         }
 
@@ -619,7 +620,29 @@ namespace ImageMorphing
 
             return destImage;
         }
+        private void velocityTest(string filename)
+        {
+            double[,] csharpTimes = new double[64, 1];
+            double[,] asmTimes = new double[64, 1];
+            for (int tNumber = 1; tNumber < 65; tNumber++)
+            {
+                this.threadsNumber = tNumber;
+                var watch = System.Diagnostics.Stopwatch.StartNew();
+                this.modeOfExecutionFlag = modeOfExecution.csharp;
+                createOutputImage();
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                csharpTimes[tNumber - 1, 0] = elapsedMs;
 
+                var watch1 = System.Diagnostics.Stopwatch.StartNew();
+                this.modeOfExecutionFlag = modeOfExecution.assembly;
+                createOutputImage();
+                watch.Stop();
+                var elapsedMs1 = watch1.ElapsedMilliseconds;
+                asmTimes[tNumber - 1, 0] = elapsedMs1;
+            }
+            excelWriter(csharpTimes, asmTimes, filename);
+        }
         /*Metoda odpowiedzialna za przygotowanie danych do działania algorytmu morphingu - 
           - obliczenie liczby i położenia punktów charakterystycznych na obrazie wyjściowym oraz dystansów
         pomiędzy punktami charakterystycznymi na obrazach początkowych i wyjściowym (dalej zwane dystansami relatywnymi)*/
@@ -675,10 +698,6 @@ namespace ImageMorphing
 
                     Task.WaitAll(threads);
             }
-            double[,] csharpTimes = new double[64, 1];
-            csharpTimes[1,0] = 0.456;
-            double[,] asmTimes = new double[64, 1];
-            excelWriter(csharpTimes, asmTimes);
         }
 
         /*Metoda odpowiedzialna za podział bitmapy na fragmenty obsługiwane przez kolejne wątki oraz utworzenie obiektów tych wątków*/
@@ -925,7 +944,7 @@ namespace ImageMorphing
             temporaryLambda = newLambda;
         }
 
-        private void excelWriter(double[,] csharpTimes, double[,] asmTimes)
+        private void excelWriter(double[,] csharpTimes, double[,] asmTimes, string filename)
         {
             Excel.Application objApp;
             Excel._Workbook objBook;
@@ -942,55 +961,36 @@ namespace ImageMorphing
                 // Instantiate Excel and start a new workbook.
                 objApp = new Excel.Application();
                 objBooks = objApp.Workbooks;
-                objBook = (Excel._Workbook)(objBooks.Open("C:/Users/gazda/Desktop/test.xlsx", misValue, misValue,
+                objBook = (Excel._Workbook)(objBooks.Open(filename, misValue, misValue,
                   misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue, misValue));
                 objSheets = objBook.Worksheets;
                 objSheet = (Excel._Worksheet)objSheets.get_Item(1);
+
                 //Get the range where the starting cell has the address
                 //m_sStartingCell and its dimensions are m_iNumRows x m_iNumCols.
-                indicesRange = objSheet.get_Range("A1", Missing.Value);
+                indicesRange = objSheet.get_Range("A2", Missing.Value);
                 indicesRange = indicesRange.get_Resize(64, 1);
 
-                    //Create an array.
-                    double[,] saRet = new double[64, 1];
+                csharpResRange = objSheet.get_Range("B2", Missing.Value);
+                csharpResRange = csharpResRange.get_Resize(64, 1);
+
+                asmResRange = objSheet.get_Range("C2", Missing.Value);
+                asmResRange = asmResRange.get_Resize(64, 1);
+
+                //Create an array.
+                double[,] saRet = new double[64, 1];
 
                     //Fill the array.
                     for (long iRow = 0; iRow < 64; iRow++)
                     {
-                        for (long iCol = 0; iCol < 1; iCol++)
-                        {
                             //Put a counter in the cell.
-                            saRet[iRow, iCol] = iRow  + 0.5;
-                        }
+                            saRet[iRow,0] = iRow  + 1;
                     }
-
 
                 //Set the range value to the array.
                 indicesRange.set_Value(Missing.Value, saRet);
-                    /*     //Get the range where the starting cell has the address
-                         //m_sStartingCell and its dimensions are m_iNumRows x m_iNumCols.
-                         indicesRange = objSheet.get_Range("A2", Missing.Value);
-                         indicesRange = indicesRange.get_Resize(64, 1);
-                        // indicesRange.NumberFormat = "$0.00";
-
-                         csharpResRange = objSheet.get_Range("B2", Missing.Value);
-                         csharpResRange = indicesRange.get_Resize(64, 1);
-
-                         asmResRange = objSheet.get_Range("C2", Missing.Value);
-                         asmResRange = indicesRange.get_Resize(64, 1);
-                         //Create an array.
-                         double[,] saRet = new double[64,1];
-                         saRet[0,0] = 1;
-
-                             //Fill the array.
-
-
-                         //Set the range value to the array.
-                         indicesRange.set_Value(Missing.Value, saRet);
-
-                         csharpResRange.set_Value(Missing.Value, csharpTimes);
-
-                         asmResRange.set_Value(Missing.Value, asmTimes);*/
+                csharpResRange.set_Value(Missing.Value, csharpTimes);
+                asmResRange.set_Value(Missing.Value, asmTimes);
 
                     //Return control of Excel to the user.
                     objApp.Visible = true;
